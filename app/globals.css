@@ -1,26 +1,53 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-fondo: #F6ECDF;
+  --color-superficie: #FFFDF9;
+  --color-borde: #ECE0D0;
+  --color-borde-suave: #F0E6D8;
+  --color-tinta: #3F362E;
+  --color-tinta-media: #6E6359;
+  --color-tinta-suave: #94887B;
+  --color-tinta-mute: #A89A8B;
+  --color-coral: #F4977E;
+  --color-coral-fuerte: #EE8164;
+  --color-coral-medio: #F2937A;
+  --color-coral-suave: #F8C3A8;
+  --color-acento: #D9583C;
+  --color-acento-medio: #E0654A;
+  --color-acento-oscuro: #C5503A;
+  --color-acento-suave: #FBE3D8;
+  --color-avatar-nino: #A9D9E8;
+  --color-avatar-nino-tinta: #1F7A93;
+  --color-avatar-anuncio: #CCD8F4;
+  --color-avatar-anuncio-tinta: #4E72C8;
+  --color-badge-logro: #3E9B6C;
+  --color-badge-logro-fondo: #CFEBD8;
+  --color-badge-actividad: #2E89A6;
+  --color-badge-actividad-fondo: #C7E7F1;
+  --color-badge-anuncio: #4E72C8;
+  --color-badge-anuncio-fondo: #CCD8F4;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fredoka);
+  --font-sans: var(--font-nunito);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background: var(--color-fondo);
+    color: var(--color-tinta);
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #E4D6C4;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
 }
