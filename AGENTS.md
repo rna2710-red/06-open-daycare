@@ -8,6 +8,35 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Commands
+
+- `npm run lint` — ESLint 9 flat config (`eslint.config.mjs`)
+- `npm run build` — production build; also the only typecheck gate (no separate typecheck script)
+- No test framework is configured — don't invent test commands. Verify changes with `npm run lint` + `npm run build`.
+
+## Stack
+
+- Next.js 16 (App Router) + React 19 + TypeScript strict. App dir is `app/` at repo root (no `src/`).
+- Tailwind v4, CSS-first config: theme tokens live in `app/globals.css` (`@import "tailwindcss"` + `@theme`). There is no `tailwind.config.js` — don't create one.
+
+## UI source of truth: `references/`
+
+- `app/page.tsx` is still create-next-app boilerplate; the product design exists only in `references/`.
+- `references/pantallas/*.dc.html` — self-contained HTML mockups of every screen (login, feed, niños, perfil-niño, resumen-día, vincular-padre, avisos, …). Read the matching mockup before building any screen; they define layout, colors, and copy.
+- `references/screenshots/*.png` — screenshots of the same screens.
+- Mockups use Fredoka (headings) + Nunito (body).
+
+## Spec-driven workflow
+
+- Features are designed with the `spec` skill (specs are saved under `specs/`) and implemented with `spec-impl`, which creates a branch named after the spec. Both live in `.agents/skills/`.
+- /spec Usaremos esta habilidad para crear las especificaciones.
+- /spec-impl Usaremos esta skill para hacer las implementaciones.
+
+## Language
+
+- The product is Spanish: UI copy, mockups, and specs are written in Spanish. Keep user-facing strings in Spanish.
+
 ## MCPs
 
-Los screenshots y cualquier cosa relacionada a Playwright tienen que estar en la carpeta .playwright-mcp. 
+- Playwright screenshots y cualquier cosa relacionada a Playwright tienen que estar en la carpeta .playwright-mcp.
+- Context7 usaremos este MCP para traer la documentación actualizada del framework.
