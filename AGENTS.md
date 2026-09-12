@@ -40,3 +40,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Playwright screenshots y cualquier cosa relacionada a Playwright tienen que estar en la carpeta .playwright-mcp.
 - Context7 usaremos este MCP para traer la documentación actualizada del framework.
+
+
+## reglas de codigo
+
+- Usar codigo limpio nombres, variables, funciones etc. en inglés 
