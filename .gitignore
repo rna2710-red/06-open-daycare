@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Evitar todo el contenido de playwrihght-mcp
+.playwright-mcp/*
