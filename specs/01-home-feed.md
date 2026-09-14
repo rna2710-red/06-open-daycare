@@ -75,15 +75,15 @@ Convenciones de render (derivadas, no guardadas en datos):
 
 ## Criterios de aceptación
 
-- [ ] `npm run lint` pasa sin errores.
-- [ ] `npm run build` compila sin errores de tipos.
-- [ ] A 1280×800 la home replica el mockup: sidebar 248px `#FFFDF9` con borde `#ECE0D0`, botón "Nueva publicación" con gradiente `#F4977E→#EE8164`, saludo "Buenas, Caro", "12 niños · martes 17 jun", caja "Compartí un momento…", separador "PUBLICADO HOY" y los textos exactos de las 3 tarjetas.
-- [ ] Badges LOGRO/ACTIVIDAD/ANUNCIO con los pares de color definidos arriba.
-- [ ] La tarjeta de actividad muestra el placeholder dashed "Foto · pintando con témperas" (alto 200px).
-- [ ] Contadores visibles: 3/1, 5/2 y 8/0 (corazones/comentarios).
-- [ ] Encabezados en Fredoka y cuerpo en Nunito.
-- [ ] Ningún link navega a otra ruta y no hay errores en consola.
-- [ ] A 375×812: sin scroll horizontal, sidebar fija oculta, hamburguesa visible; el drawer se abre y se cierra al tocar el botón o fuera del panel.
+- [x] `npm run lint` pasa sin errores.
+- [x] `npm run build` compila sin errores de tipos.
+- [x] A 1280×800 la home replica el mockup: sidebar 248px `#FFFDF9` con borde `#ECE0D0`, botón "Nueva publicación" con gradiente `#F4977E→#EE8164`, saludo "Buenas, Caro", "12 niños · martes 17 jun", caja "Compartí un momento…", separador "PUBLICADO HOY" y los textos exactos de las 3 tarjetas.
+- [x] Badges LOGRO/ACTIVIDAD/ANUNCIO con los pares de color definidos arriba.
+- [x] La tarjeta de actividad muestra el placeholder dashed "Foto · pintando con témperas" (alto 200px).
+- [x] Contadores visibles: 3/1, 5/2 y 8/0 (corazones/comentarios).
+- [x] Encabezados en Fredoka y cuerpo en Nunito.
+- [x] Ningún link navega a otra ruta y no hay errores en consola.
+- [x] A 375×812: sin scroll horizontal, sidebar fija oculta, hamburguesa visible; el drawer se abre y se cierra al tocar el botón o fuera del panel.
 
 ## Decisiones
 
