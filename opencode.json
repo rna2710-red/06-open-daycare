@@ -1,5 +1,28 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "spec-verifier": {
+      "description": "Verifica y corrige criterios de aceptación: lint, build, Next.js best practices, y comparación visual con mockups vía Playwright.",
+      "mode": "all",
+      "model": "opencode-go/mimo-v2.5",
+      "permission": {
+        "edit": "allow",
+        "bash": {
+          "npm run lint": "allow",
+          "npm run build": "allow",
+          "npm run dev *": "allow",
+          "npm run start *": "allow",
+          "curl *": "allow",
+          "lsof *": "allow",
+          "netstat *": "allow",
+          "tasklist *": "allow",
+          "taskkill *": "allow",
+          "Start-Process *": "allow",
+          "Get-NetTCPConnection *": "allow"
+        }
+      }
+    }
+  },
   "mcp": {
     "playwright": {
       "type": "local",
