@@ -148,11 +148,11 @@ const closeIcon = (
   </svg>
 );
 
-const navItems: { id: NavItem; label: string; icon: ReactNode }[] = [
-  { id: "feed", label: "Feed", icon: feedIcon },
-  { id: "ninos", label: "Niños", icon: kidsIcon },
-  { id: "avisos", label: "Avisos", icon: bellIcon },
-  { id: "cuenta", label: "Mi cuenta", icon: accountIcon },
+const navItems: { id: NavItem; label: string; icon: ReactNode; href: string }[] = [
+  { id: "feed", label: "Feed", icon: feedIcon, href: "/" },
+  { id: "ninos", label: "Niños", icon: kidsIcon, href: "/kids" },
+  { id: "avisos", label: "Avisos", icon: bellIcon, href: "/avisos" },
+  { id: "cuenta", label: "Mi cuenta", icon: accountIcon, href: "/cuenta" },
 ];
 
 export function Sidebar({ itemActivo }: SidebarProps) {
@@ -229,7 +229,7 @@ function SidebarContent({ itemActivo }: SidebarProps) {
         {navItems.map((item) => (
           <a
             key={item.id}
-            href="#"
+            href={item.href}
             className={`flex items-center gap-3 rounded-xl px-3 py-[11px] text-[14.5px] ${
               item.id === itemActivo
                 ? "bg-acento-suave font-extrabold text-acento"

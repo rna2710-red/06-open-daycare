@@ -1,0 +1,36 @@
+▲ Next.js 16.3.5 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.15.193:3000
+✓ Ready in 652ms
+✓ Running next.config.ts took 54ms
+
+ GET /kids 200 in 729ms (next.js: 338ms, application-code: 391ms)
+ GET /kids 200 in 203ms (next.js: 8ms, application-code: 195ms)
+ GET /kids/mateo-fernandez 200 in 1558ms (next.js: 1391ms, application-code: 167ms)
+ GET /kids 200 in 95ms (next.js: 9ms, application-code: 86ms)
+ GET /kids/mateo-fernandez 200 in 92ms (next.js: 19ms, application-code: 73ms)
+ GET /kids 200 in 51ms (next.js: 11ms, application-code: 40ms)
+ GET /kids/non-existent-child 404 in 147ms (next.js: 17ms, application-code: 130ms)
+ GET /kids/mateo-fernandez 200 in 141ms (next.js: 16ms, application-code: 125ms)
+ GET / 200 in 141ms (next.js: 48ms, application-code: 92ms)
+⚠ Blocked cross-origin request to Next.js dev resource /_next/hmr from "127.0.0.1".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['127.0.0.1'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 83ms (next.js: 5ms, application-code: 78ms)
+ GET / 200 in 114ms (next.js: 35ms, application-code: 79ms)
+ GET /kids 200 in 353ms (next.js: 36ms, application-code: 317ms)
+ GET /kids/mateo-fernandez 200 in 145ms (next.js: 30ms, application-code: 115ms)
+ GET /kids 200 in 97ms (next.js: 16ms, application-code: 82ms)
+ GET / 200 in 188ms (next.js: 55ms, application-code: 133ms)
+ GET /kids 200 in 105ms (next.js: 13ms, application-code: 92ms)
+ GET /avisos 404 in 734ms (next.js: 640ms, application-code: 94ms)
+ GET /kids 200 in 428ms (next.js: 25ms, application-code: 404ms)
+ GET /kids/valentina-soto 200 in 280ms (next.js: 52ms, application-code: 228ms)

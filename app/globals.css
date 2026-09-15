@@ -34,6 +34,15 @@
   --font-sans: var(--font-nunito);
 }
 
+.kid {
+  transition: 0.15s;
+}
+
+.kid:hover {
+  border-color: #f2a78e;
+  transform: translateY(-2px);
+}
+
 @layer base {
   body {
     background: var(--color-fondo);

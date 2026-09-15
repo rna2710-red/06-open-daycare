@@ -1,6 +1,6 @@
 # SPEC 01 — Home feed (réplica del mockup feed.dc.html)
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** ninguna
 > **Fecha:** 2026-09-12
 > **Objetivo:** Implementar el mockup `references/pantallas/feed.dc.html` como página home (`/`) con datos simulados, sin autenticación ni base de datos.
