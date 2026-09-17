@@ -56,7 +56,7 @@ export default function KidsPage() {
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 rounded-[14px] bg-linear-to-b from-coral to-coral-fuerte px-[18px] py-[11px] text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,.7)]"
+              className="flex cursor-pointer items-center gap-2 rounded-[14px] bg-linear-to-b from-coral to-coral-fuerte px-[18px] py-[11px] text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,.7)]"
             >
               {plusIcon}Agregar niño
             </button>
