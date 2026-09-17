@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { Sidebar } from "@/app/components/shared/Sidebar";
 import { KidCard } from "@/app/components/kids/KidCard";
+import AddChildModal from "@/app/components/kids/AddChildModal";
 import { children } from "@/lib/mock/kids";
 
 const searchIcon = (
@@ -34,6 +38,8 @@ const plusIcon = (
 );
 
 export default function KidsPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="flex h-dvh flex-col bg-fondo md:flex-row">
       <Sidebar itemActivo="ninos" />
@@ -48,12 +54,12 @@ export default function KidsPage() {
                 Niños
               </h1>
             </div>
-            <a
-              href="#"
+            <button
+              onClick={() => setIsModalOpen(true)}
               className="flex items-center gap-2 rounded-[14px] bg-linear-to-b from-coral to-coral-fuerte px-[18px] py-[11px] text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,.7)]"
             >
               {plusIcon}Agregar niño
-            </a>
+            </button>
           </div>
 
           <div className="mb-[22px] flex items-center gap-[11px] rounded-[14px] border border-borde bg-superficie px-4 py-3">
@@ -81,6 +87,7 @@ export default function KidsPage() {
           </div>
         </div>
       </main>
+      <AddChildModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }
