@@ -1,6 +1,6 @@
 # SPEC 03 — Pantallas de login y activación de cuenta
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** ninguna
 > **Fecha:** 2026-09-16
 > **Objetivo:** Implementar las pantallas `/login` y `/activar-cuenta` replicando los mockups `login.dc.html` y `activar-cuenta.dc.html` sin autenticación real, sin validación de formularios y con datos simulados.
