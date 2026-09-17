@@ -1,6 +1,6 @@
 # SPEC 02 — Listado de niños y perfil individual
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01
 > **Fecha:** 2026-09-14
 > **Objetivo:** Implementar la ruta `/kids` con el listado de niños y `/kids/[slug]` con el perfil individual, replicando los mockups `ninos.dc.html` y `perfil-nino.dc.html` con datos simulados y sin base de datos.
