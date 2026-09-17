@@ -217,7 +217,7 @@ export default function LoginPage() {
           <p className="mt-6 text-center text-[14.5px] text-tinta-media">
             ¿Te invitó la guardería?{" "}
             <Link
-              href="/activar-cuenta"
+              href="/activate"
               className="font-extrabold text-acento-oscuro hover:underline"
             >
               Activá tu cuenta
