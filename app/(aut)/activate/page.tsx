@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AuthCheckbox } from "@/app/components/auth/AuthCheckbox";
 import { invitedChild, invitationCode } from "@/lib/mock/auth";
 
-export default function ActivarCuentaPage() {
+export default function ActivatePage() {
   const [photoAuth, setPhotoAuth] = useState(true);
 
   return (
