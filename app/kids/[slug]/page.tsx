@@ -214,14 +214,14 @@ export default async function ChildProfilePage({
                     </div>
                   ))}
 
-                  <a href="#" className="flex items-center gap-3 pt-2">
+                  <Link href={`/kids/${slug}/vincular-padre`} className="flex items-center gap-3 pt-2">
                     <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-[#D8CBBA] text-[#B0A290]">
                       {plusIcon}
                     </span>
                     <span className="text-[14.5px] font-extrabold text-acento-oscuro">
                       Vincular otro padre
                     </span>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
