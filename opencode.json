@@ -23,10 +23,20 @@
       }
     }
   },
+  "permission": {
+    "external_directory": {
+      "/tmp/**": "allow"
+    },
+    "bash": "allow"
+  },
   "mcp": {
     "playwright": {
       "type": "local",
-      "command": ["npx", "-y", "@playwright/mcp@latest"],
+      "command": [
+        "npx",
+        "-y",
+        "@playwright/mcp@latest"
+      ],
       "enabled": true,
       "environment": {}
     }
