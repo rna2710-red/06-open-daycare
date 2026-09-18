@@ -165,7 +165,7 @@ export default function LinkParentPage() {
             <div className="mb-2 text-[12px] font-extrabold tracking-[.7px] text-[#A88526]">
               CÓDIGO DE INVITACIÓN
             </div>
-            <div className="font-display text-[34px] font-semibold tracking-[7px] text-[#8A7234]">
+            <div suppressHydrationWarning className="font-display text-[34px] font-semibold tracking-[7px] text-[#8A7234]">
               {code}
             </div>
             <div className="mt-1.5 text-[13px] text-[#A88526]">
