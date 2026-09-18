@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, useCallback, type ReactNode } from "react";
 import { classroom, user } from "@/lib/mock/feed";
 import CreatePostModal from "@/app/components/home/CreatePostModal";
+import Toast from "@/app/components/shared/Toast";
 
 export type NavItem = "feed" | "ninos" | "avisos" | "cuenta";
 
@@ -163,6 +164,11 @@ const navItems: { id: NavItem; label: string; icon: ReactNode; href: string }[] 
 export function Sidebar({ itemActivo }: SidebarProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isToastVisible, setIsToastVisible] = useState(false);
+
+  const handlePublish = useCallback(() => {
+    setIsToastVisible(true);
+  }, []);
 
   return (
     <>
@@ -204,7 +210,16 @@ export function Sidebar({ itemActivo }: SidebarProps) {
         <SidebarContent itemActivo={itemActivo} onNewPost={() => setIsModalOpen(true)} />
       </aside>
 
-      <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <CreatePostModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onPublish={handlePublish}
+      />
+      <Toast
+        message="Publicación enviada"
+        isVisible={isToastVisible}
+        onClose={() => setIsToastVisible(false)}
+      />
     </>
   );
 }

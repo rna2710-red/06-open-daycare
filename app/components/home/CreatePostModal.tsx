@@ -7,9 +7,10 @@ import { postTypes } from "@/lib/mock/feed";
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onPublish: () => void;
 }
 
-export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
+export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePostModalProps) {
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -62,6 +63,10 @@ export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProp
             Nueva publicación
           </span>
           <button
+            onClick={() => {
+              onPublish();
+              onClose();
+            }}
             style={{ color: "#D9583C", fontWeight: 800, fontSize: 15 }}
           >
             Publicar
