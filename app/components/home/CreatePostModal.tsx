@@ -12,6 +12,7 @@ interface CreatePostModalProps {
 export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   if (!isOpen) return null;
 
@@ -166,6 +167,34 @@ export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProp
               );
             })}
           </div>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: 0.7,
+              color: "#94887B",
+              marginBottom: 10,
+            }}
+          >
+            DESCRIPCIÓN
+          </div>
+          <textarea
+            placeholder="Contá cómo le fue hoy…"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full resize-y"
+            style={{
+              minHeight: 120,
+              padding: "14px 16px",
+              borderRadius: 14,
+              border: "1.5px solid #EADFD0",
+              backgroundColor: "#fff",
+              fontSize: 15,
+              color: "#3F362E",
+              lineHeight: 1.5,
+              marginBottom: 22,
+            }}
+          />
         </div>
       </div>
     </div>
