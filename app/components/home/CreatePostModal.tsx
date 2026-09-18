@@ -27,12 +27,12 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-10 px-6"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-10 px-6 overflow-y-auto"
       style={{ backgroundColor: "rgba(0,0,0,.4)" }}
       onClick={onClose}
     >
       <div
-        className="w-full overflow-hidden"
+        className="w-full my-10"
         style={{
           maxWidth: 580,
           backgroundColor: "#FBF4EC",
