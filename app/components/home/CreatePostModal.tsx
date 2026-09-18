@@ -195,6 +195,72 @@ export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProp
               marginBottom: 22,
             }}
           />
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: 0.7,
+              color: "#94887B",
+              marginBottom: 10,
+            }}
+          >
+            FOTOS
+          </div>
+          <div className="flex" style={{ gap: 12 }}>
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: 96,
+                height: 96,
+                borderRadius: 14,
+                backgroundColor: "#F4ECE1",
+                border: "1px solid #ECE0D0",
+                color: "#CBB89F",
+              }}
+            >
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-3.6-3.6a2 2 0 0 0-2.8 0L6 21" />
+              </svg>
+            </div>
+            <div
+              className="flex flex-col items-center justify-center"
+              style={{
+                width: 96,
+                height: 96,
+                borderRadius: 14,
+                border: "1.5px dashed #DBCDBA",
+                backgroundColor: "#F4ECE1",
+                color: "#B0A290",
+                cursor: "pointer",
+                gap: 6,
+              }}
+            >
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#C5503A"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              <span style={{ fontSize: 12 }}>Agregar</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
