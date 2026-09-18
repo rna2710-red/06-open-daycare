@@ -26,11 +26,45 @@ const inputStyle = {
   color: "#3F362E",
 };
 
-function formatDate(value: string): string {
+function formatAndValidateDate(value: string): {
+  formatted: string;
+  error: string | null;
+} {
   const digits = value.replace(/\D/g, "").slice(0, 8);
-  if (digits.length <= 2) return digits;
-  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+
+  const formatted =
+    digits.length <= 2
+      ? digits
+      : digits.length <= 4
+        ? `${digits.slice(0, 2)}/${digits.slice(2)}`
+        : `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+
+  if (digits.length < 8) return { formatted, error: null };
+
+  const day = parseInt(digits.slice(0, 2), 10);
+  const month = parseInt(digits.slice(2, 4), 10);
+  const year = parseInt(digits.slice(4, 8), 10);
+
+  if (month < 1 || month > 12) return { formatted, error: "Mes inválido" };
+
+  const date = new Date(year, month - 1, day);
+  if (date.getDate() !== day || date.getMonth() !== month - 1) {
+    return { formatted, error: "Fecha inválida" };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (date > today) return { formatted, error: "Fecha futura" };
+
+  const maxAgeDate = new Date(today);
+  maxAgeDate.setFullYear(maxAgeDate.getFullYear() - 4);
+
+  if (date < maxAgeDate) {
+    return { formatted, error: "El niño debe tener 4 años o menos" };
+  }
+
+  return { formatted, error: null };
 }
 
 export default function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
@@ -39,6 +73,7 @@ export default function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
   const [selectedRoom, setSelectedRoom] = useState(rooms[0].id);
   const [allergies, setAllergies] = useState("");
   const [medicalNotes, setMedicalNotes] = useState("");
+  const [dateError, setDateError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -88,10 +123,12 @@ export default function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
           </span>
           <button
             onClick={onClose}
+            disabled={!!dateError}
             style={{
-              color: "#D9583C",
+              color: dateError ? "#B0A290" : "#D9583C",
               fontWeight: 800,
               fontSize: "15px",
+              cursor: dateError ? "not-allowed" : "pointer",
             }}
           >
             Guardar
@@ -120,9 +157,30 @@ export default function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                 type="text"
                 placeholder="dd/mm/aaaa"
                 value={birthDate}
-                onChange={(e) => setBirthDate(formatDate(e.target.value))}
-                style={inputStyle}
+                onChange={(e) => {
+                  const { formatted, error } = formatAndValidateDate(
+                    e.target.value,
+                  );
+                  setBirthDate(formatted);
+                  setDateError(error);
+                }}
+                style={{
+                  ...inputStyle,
+                  borderColor: dateError ? "#D9583C" : "#EADFD0",
+                }}
               />
+              {dateError && (
+                <div
+                  style={{
+                    color: "#D9583C",
+                    fontSize: "12px",
+                    marginTop: "6px",
+                    fontWeight: 600,
+                  }}
+                >
+                  {dateError}
+                </div>
+              )}
             </div>
             <div className="flex-1">
               <div style={labelStyle}>SALA</div>

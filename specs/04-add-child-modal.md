@@ -62,22 +62,22 @@ No se introduce una nueva interfaz para el formulario del modal. Los campos se m
 
 ## Criterios de aceptación
 
-- [x] `npm run lint` pasa sin errores.
-- [x] `npm run build` compila sin errores de tipos.
-- [x] Click en "+ Agregar niño" en `/kids` abre el modal.
-- [x] El modal replica el mockup: header con "Cancelar", título "Agregar niño", "Guardar"; campos nombre, fecha, sala, alergias, notas médicas.
-- [x] Campo "FECHA DE NACIMIENTO" tiene máscara `dd/mm/aaaa`: al escribir dígitos se insertan separadores automáticamente.
-- [x] La máscara limita a 10 caracteres y solo permite dígitos.
-- [x] El placeholder de fecha es "dd/mm/aaaa".
-- [x] Dropdown "SALA" muestra las 3 opciones: "Soles", "Lunas", "Estrellas".
-- [x] Dropdown tiene SVG chevron como en el mockup.
-- [x] Click en "Cancelar" cierra el modal y permanece en `/kids`.
-- [x] Click en "Guardar" cierra el modal (placeholder, no guarda datos).
-- [x] Overlay oscuro cubre la pantalla al abrir el modal.
-- [x] Click fuera del modal cierra el modal.
-- [x] A 1280×800 el modal se ve centrado y con el estilo del mockup.
-- [x] Encabezados en Fredoka y cuerpo en Nunito.
-- [x] No hay errores en consola.
+- [] `npm run lint` pasa sin errores.
+- [] `npm run build` compila sin errores de tipos.
+- [] Click en "+ Agregar niño" en `/kids` abre el modal.
+- [] El modal replica el mockup: header con "Cancelar", título "Agregar niño", "Guardar"; campos nombre, fecha, sala, alergias, notas médicas.
+- [] Campo "FECHA DE NACIMIENTO" tiene máscara `dd/mm/aaaa`: al escribir dígitos se insertan separadores automáticamente.
+- [] La máscara limita a 10 caracteres y solo permite dígitos.
+- [] El placeholder de fecha es "dd/mm/aaaa".
+- [] Dropdown "SALA" muestra las 3 opciones: "Soles", "Lunas", "Estrellas".
+- [] Dropdown tiene SVG chevron como en el mockup.
+- [] Click en "Cancelar" cierra el modal y permanece en `/kids`.
+- [] Click en "Guardar" cierra el modal (placeholder, no guarda datos).
+- [] Overlay oscuro cubre la pantalla al abrir el modal.
+- [] Click fuera del modal cierra el modal.
+- [] A 1280×800 el modal se ve centrado y con el estilo del mockup.
+- [] Encabezados en Fredoka y cuerpo en Nunito.
+- [] No hay errores en consola.
 
 ## Decisiones
 
