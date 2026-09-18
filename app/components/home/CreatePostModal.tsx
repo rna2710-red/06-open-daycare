@@ -12,17 +12,24 @@ interface CreatePostModalProps {
 
 export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePostModalProps) {
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
   const [selectedType, setSelectedType] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
   if (!isOpen) return null;
 
   const toggleChild = (childId: string) => {
+    setIsAllSelected(false);
     setSelectedChildren((prev) =>
       prev.includes(childId)
         ? prev.filter((id) => id !== childId)
         : [...prev, childId]
     );
+  };
+
+  const toggleAll = () => {
+    setIsAllSelected((prev) => !prev);
+    setSelectedChildren([]);
   };
 
   return (
@@ -124,12 +131,13 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
               );
             })}
             <button
+              onClick={toggleAll}
               style={{
                 padding: "6px 16px",
                 borderRadius: 999,
-                border: "1.5px solid #ECE0D0",
-                backgroundColor: "#FFFDF9",
-                color: "#6E6359",
+                border: `1.5px solid ${isAllSelected ? "#3F362E" : "#ECE0D0"}`,
+                backgroundColor: isAllSelected ? "#3F362E" : "#FFFDF9",
+                color: isAllSelected ? "#fff" : "#6E6359",
                 fontWeight: 700,
                 fontSize: 14,
                 cursor: "pointer",

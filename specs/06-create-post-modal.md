@@ -82,6 +82,9 @@ No se introduce una nueva interfaz para la publicación. Los datos del formulari
 - [ ] Estado seleccionado del chip: fondo `#3F362E`, borde `#3F362E`, texto `#fff`.
 - [ ] Estado no seleccionado del chip: fondo `#FFFDF9`, borde `#ECE0D0`, texto `#6E6359`.
 - [ ] Botón "Toda la sala" está presente en la sección PARA.
+- [ ] "Toda la sala" es seleccionable: click activa/desactiva, con el mismo estilo visual que los chips de niños.
+- [ ] Interacción cruzada: si hay niños seleccionados y se hace click en "Toda la sala", se desmarcan todos los niños individuales.
+- [ ] Interacción cruzada: si "Toda la sala" está seleccionado y se hace click en un niño individual, se deselecciona "Toda la sala" y se selecciona ese niño.
 - [ ] Sección "TIPO" muestra 7 chips de categoría: Comida, Siesta, Actividad, Logro, Ánimo, Foto, Anuncio.
 - [ ] Cada chip de tipo tiene el color de fondo y texto correcto según el mockup.
 - [ ] Selección de tipo es de uno solo: click en uno deselecciona el anterior.
@@ -100,7 +103,7 @@ No se introduce una nueva interfaz para la publicación. Los datos del formulari
 
 - **Sí:** modal como componente client (`"use client"`) — maneja estado local de selección de niños, tipo, descripción y visibilidad.
 - **Sí:** selección múltiple de niños — el mockup muestra chips individuales, no un select múltiple; cada chip se activa/desactiva independientemente. Permite seleccionar uno, varios o todos.
-- **Sí:** "Toda la sala" como chip adicional — no afecta la selección individual de niños; es una opción más en la lista.
+- **Sí:** "Toda la sala" con interacción cruzada — si hay niños seleccionados individualmente y se hace click en "Toda la sala", se desmarcan los niños individuales. Si "Toda la sala" está seleccionado y se hace click en un niño individual, se deselecciona "Toda la sala". Son opciones mutuamente excluyentes.
 - **Sí:** selección de tipo es de uno solo — el mockup sugiere categorías excluyentes (una publicación es de un tipo).
 - **Sí:** colores de tipos como constants en `lib/mock/feed.ts` — reutilizables y fáciles de mantener; siguen la convención de centralizar datos mock.
 - **Sí:** toast como componente separado (`Toast.tsx`) — reutilizable para otras acciones del proyecto.
