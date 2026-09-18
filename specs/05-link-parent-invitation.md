@@ -62,23 +62,23 @@ No se introduce una nueva interfaz. El código se genera al cargar la página y 
 
 ## Criterios de aceptación
 
-- [ ] `npm run lint` pasa sin errores.
-- [ ] `npm run build` compila sin errores de tipos.
-- [ ] Click en "Vincular padre" desde `/kids/[nombre-niño]` navega a `/kids/[nombre-niño]/vincular-padre`.
-- [ ] A 1280×800 la ruta replica el mockup: header con título y subtítulo, info box azul, campos nombre/email/parentesco, código de invitación, botón enviar.
-- [ ] Campo "NOMBRE DEL PADRE/MADRE" tiene placeholder "Ej. Diego Fernández".
-- [ ] Campo "EMAIL" tiene placeholder "correo@ejemplo.com".
-- [ ] Los 3 botones de parentesco se renderizan: Mamá, Papá, Tutor/a.
-- [ ] Mamá inicia seleccionado por defecto con estilo diferente (fondo `#CCD8F4`, borde `#9FB8EC`).
-- [ ] Click en Papá o Tutor/a cambia la selección visualmente.
-- [ ] Código de invitación se muestra con 5 caracteres alfanuméricos mayúsculos.
-- [ ] Código usa Fredoka 600 34px, letter-spacing 7px, color `#8A7234`.
-- [ ] Texto "Vence en 7 días" debajo del código.
-- [ ] Click en "Enviar invitación" navega a `/kids/[nombre-niño]`.
-- [ ] Click en botón X (cerrar) navega a `/kids/[nombre-niño]`.
-- [ ] El subtítulo muestra el nombre del niño dinámicamente.
-- [ ] Encabezados en Fredoka y cuerpo en Nunito.
-- [ ] No hay errores en consola.
+- [x] `npm run lint` pasa sin errores.
+- [x] `npm run build` compila sin errores de tipos.
+- [x] Click en "Vincular padre" desde `/kids/[nombre-niño]` navega a `/kids/[nombre-niño]/vincular-padre`.
+- [x] A 1280×800 la ruta replica el mockup: header con título y subtítulo, info box azul, campos nombre/email/parentesco, código de invitación, botón enviar.
+- [x] Campo "NOMBRE DEL PADRE/MADRE" tiene placeholder "Ej. Diego Fernández".
+- [x] Campo "EMAIL" tiene placeholder "correo@ejemplo.com".
+- [x] Los 3 botones de parentesco se renderizan: Mamá, Papá, Tutor/a.
+- [x] Mamá inicia seleccionado por defecto con estilo diferente (fondo `#CCD8F4`, borde `#9FB8EC`).
+- [x] Click en Papá o Tutor/a cambia la selección visualmente.
+- [x] Código de invitación se muestra con 5 caracteres alfanuméricos mayúsculos.
+- [x] Código usa Fredoka 600 34px, letter-spacing 7px, color `#8A7234`.
+- [x] Texto "Vence en 7 días" debajo del código.
+- [x] Click en "Enviar invitación" navega a `/kids/[nombre-niño]`.
+- [x] Click en botón X (cerrar) navega a `/kids/[nombre-niño]`.
+- [x] El subtítulo muestra el nombre del niño dinámicamente.
+- [x] Encabezados en Fredoka y cuerpo en Nunito.
+- [x] No hay errores en consola.
 
 ## Decisiones
 
