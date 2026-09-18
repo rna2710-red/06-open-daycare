@@ -1,6 +1,6 @@
 # SPEC 05 — Pantalla "Vincular padre"
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 02
 > **Fecha:** 2026-09-18
 > **Objetivo:** Implementar la pantalla "Vincular padre" que se accede desde el perfil del niño en `/kids/[nombre-niño]`, replicando el mockup `vincular-padre.dc.html` con formulario de nombre, email, parentesco y código de invitación generado automáticamente.
