@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { children } from "@/lib/mock/kids";
+import { postTypes } from "@/lib/mock/feed";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface CreatePostModalProps {
 
 export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
+  const [selectedType, setSelectedType] = useState<string>("");
 
   if (!isOpen) return null;
 
@@ -129,6 +131,40 @@ export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProp
             >
               Toda la sala
             </button>
+          </div>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: 0.7,
+              color: "#94887B",
+              marginBottom: 10,
+            }}
+          >
+            TIPO
+          </div>
+          <div className="flex flex-wrap" style={{ gap: 9, marginBottom: 22 }}>
+            {postTypes.map((type) => {
+              const isSelected = selectedType === type.id;
+              return (
+                <button
+                  key={type.id}
+                  onClick={() => setSelectedType(isSelected ? "" : type.id)}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: 999,
+                    border: "none",
+                    backgroundColor: isSelected ? type.bgColor : `${type.bgColor}33`,
+                    color: type.textColor,
+                    fontWeight: 800,
+                    fontSize: 13.5,
+                    cursor: "pointer",
+                  }}
+                >
+                  {type.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
