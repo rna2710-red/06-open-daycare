@@ -82,7 +82,7 @@ export default function LinkParentPage() {
 
   return (
     <div className="flex min-h-dvh items-start justify-center bg-fondo px-6 py-10">
-      <div className="w-full max-w-[480px] overflow-hidden rounded-3xl border border-[#ECE0D0] bg-[#FBF4EC] shadow-[0_20px_50px_-24px_rgba(63,54,46,.35)]">
+      <div className="w-full max-w-[480px] overflow-hidden rounded-[24px] border border-[#ECE0D0] bg-[#FBF4EC] shadow-[0_20px_50px_-24px_rgba(63,54,46,.35)]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#ECE0D0] px-[26px] py-5">
           <div>
@@ -104,7 +104,7 @@ export default function LinkParentPage() {
         {/* Body */}
         <div className="px-[26px] pt-[22px] pb-[22px]">
           {/* Info box */}
-          <div className="mb-5 flex gap-[11px] rounded-[14px] bg-[#E3ECFB] p-[13px_16px]">
+          <div className="mb-[18px] flex gap-[11px] rounded-[14px] bg-[#E3ECFB] p-[13px_16px]">
             {infoIcon}
             <span className="text-[13.5px] leading-[1.45] text-[#3F5694]">
               Le enviaremos un correo con un código para que active su cuenta.
@@ -161,7 +161,7 @@ export default function LinkParentPage() {
           </div>
 
           {/* Código de invitación */}
-          <div className="mb-5 rounded-2xl border-[1.5px] border-dashed border-[#E6D08A] bg-[#FBF1D6] p-[18px] text-center">
+          <div className="mb-5 rounded-[16px] border-[1.5px] border-dashed border-[#E6D08A] bg-[#FBF1D6] p-[18px] text-center">
             <div className="mb-2 text-[12px] font-extrabold tracking-[.7px] text-[#A88526]">
               CÓDIGO DE INVITACIÓN
             </div>
