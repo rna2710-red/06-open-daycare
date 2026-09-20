@@ -1,8 +1,8 @@
-export type PostType = "achievement" | "activity" | "announcement";
+export type PostCategory = "achievement" | "activity" | "announcement";
 
 export interface Post {
   id: string;
-  type: PostType;
+  type: PostCategory;
   child: string | null;
   initial: string;
   time: string;
@@ -70,4 +70,21 @@ export const posts: Post[] = [
     likes: 8,
     comments: 0,
   },
+];
+
+export interface PostType {
+  id: string;
+  label: string;
+  bgColor: string;
+  textColor: string;
+}
+
+export const postTypes: PostType[] = [
+  { id: "comida", label: "Comida", bgColor: "#9A7B1E", textColor: "#fff" },
+  { id: "siesta", label: "Siesta", bgColor: "#E7DCF6", textColor: "#7B5FC0" },
+  { id: "actividad", label: "Actividad", bgColor: "#2E89A6", textColor: "#fff" },
+  { id: "logro", label: "Logro", bgColor: "#CFEBD8", textColor: "#3E9B6C" },
+  { id: "animo", label: "Ánimo", bgColor: "#F9D2DE", textColor: "#C56486" },
+  { id: "foto", label: "Foto", bgColor: "#FBD8CC", textColor: "#D9684A" },
+  { id: "anuncio", label: "Anuncio", bgColor: "#CCD8F4", textColor: "#4E72C8" },
 ];

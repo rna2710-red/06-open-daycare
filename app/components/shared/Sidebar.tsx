@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, useCallback, type ReactNode } from "react";
 import { classroom, user } from "@/lib/mock/feed";
+import CreatePostModal from "@/app/components/home/CreatePostModal";
+import Toast from "@/app/components/shared/Toast";
 
 export type NavItem = "feed" | "ninos" | "avisos" | "cuenta";
 
 interface SidebarProps {
   itemActivo: NavItem;
+}
+
+interface SidebarContentProps extends SidebarProps {
+  onNewPost: () => void;
 }
 
 const sunIcon = (
@@ -157,6 +163,12 @@ const navItems: { id: NavItem; label: string; icon: ReactNode; href: string }[] 
 
 export function Sidebar({ itemActivo }: SidebarProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isToastVisible, setIsToastVisible] = useState(false);
+
+  const handlePublish = useCallback(() => {
+    setIsToastVisible(true);
+  }, []);
 
   return (
     <>
@@ -189,19 +201,30 @@ export function Sidebar({ itemActivo }: SidebarProps) {
             className="absolute inset-0 bg-tinta/45"
           />
           <aside className="absolute inset-y-0 left-0 flex w-[248px] flex-col border-r border-borde bg-superficie px-4 py-6">
-            <SidebarContent itemActivo={itemActivo} />
+            <SidebarContent itemActivo={itemActivo} onNewPost={() => setIsModalOpen(true)} />
           </aside>
         </div>
       )}
 
       <aside className="sticky top-0 hidden h-dvh w-[248px] flex-none flex-col border-r border-borde bg-superficie px-4 py-6 md:flex">
-        <SidebarContent itemActivo={itemActivo} />
+        <SidebarContent itemActivo={itemActivo} onNewPost={() => setIsModalOpen(true)} />
       </aside>
+
+      <CreatePostModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onPublish={handlePublish}
+      />
+      <Toast
+        message="Publicación enviada"
+        isVisible={isToastVisible}
+        onClose={() => setIsToastVisible(false)}
+      />
     </>
   );
 }
 
-function SidebarContent({ itemActivo }: SidebarProps) {
+function SidebarContent({ itemActivo, onNewPost }: SidebarContentProps) {
   return (
     <>
       <a href="#" className="flex items-center gap-[11px] px-2 pb-[22px] pt-1">
@@ -218,12 +241,16 @@ function SidebarContent({ itemActivo }: SidebarProps) {
         </span>
       </a>
 
-      <a
-        href="#"
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          onNewPost();
+        }}
         className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-linear-to-b from-coral to-coral-fuerte px-3 py-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,.75)]"
       >
         {plusIcon}Nueva publicación
-      </a>
+      </button>
 
       <nav className="flex flex-1 flex-col gap-1">
         {navItems.map((item) => (

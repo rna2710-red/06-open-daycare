@@ -1,10 +1,10 @@
-import type { Post, PostType } from "@/lib/mock/feed";
+import type { Post, PostCategory } from "@/lib/mock/feed";
 
 interface PostCardProps {
   post: Post;
 }
 
-const badgeByType: Record<PostType, { label: string; className: string }> = {
+const badgeByType: Record<PostCategory, { label: string; className: string }> = {
   achievement: {
     label: "LOGRO",
     className: "bg-badge-logro-fondo text-badge-logro",
