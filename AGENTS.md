@@ -18,6 +18,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Next.js 16 (App Router) + React 19 + TypeScript strict. App dir is `app/` at repo root (no `src/`).
 - Tailwind v4, CSS-first config: theme tokens live in `app/globals.css` (`@import "tailwindcss"` + `@theme`). There is no `tailwind.config.js` — don't create one.
+- **Supabase** — Backend as a Service: base de datos Postgres, autenticación, Edge Functions, Storage, Realtime.
 
 ## UI source of truth: `references/`
 
@@ -35,6 +36,11 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Command
 - /verify-spec Usaremos el agente `spec-verifier` para validar y corregir los criterios de aceptación de un spec. Revisa lint, build, Next.js best practices vía Context7, compara screenshots con mockups vía Playwright, y corrige tanto el spec como el código cuando hay desviaciones.
 
+## Supabase Skills
+
+- `supabase` — Skill principal para cualquier tarea relacionada con Supabase: Database, Auth, Edge Functions, Realtime, Storage, RLS, migraciones, debugging. Siempre verificar contra la documentación actualizada antes de implementar.
+- `supabase-postgres-best-practices` — Best practices de Postgres mantenido por Supabase. Cargar ANTES de escribir o cambiar cualquier cosa en la base de datos: tablas, columnas, migraciones, RLS policies, indexes, triggers, funciones, rendimiento de queries.
+
 ## Agents
 
 - `spec-verifier` — Valida y corrige los criterios de aceptación de un spec. Ejecuta lint, build, verifica Next.js best practices vía Context7, compara screenshots con mockups usando Playwright, y corrige tanto el spec como el código cuando hay desviaciones. Guarda screenshots en `.playwright-mcp/`.
@@ -45,8 +51,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## MCPs
 
-- Playwright screenshots y cualquier cosa relacionada a Playwright tienen que estar en la carpeta .playwright-mcp.
-- Context7 usaremos este MCP para traer la documentación actualizada del framework.
+- **Playwright** — Screenshots y cualquier cosa relacionada a Playwright tienen que estar en la carpeta `.playwright-mcp`.
+- **Context7** — Usaremos este MCP para traer la documentación actualizada del framework.
+- **Supabase** — MCP remoto para interactuar con el proyecto de Supabase: Database, Auth, Edge Functions, Storage, Branching, Debugging. URL: `mcp.supabase.com`.
 
 
 ## reglas de codigo

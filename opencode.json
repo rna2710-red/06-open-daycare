@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "lsp": true,
   "agent": {
     "spec-verifier": {
       "description": "Verifica y corrige criterios de aceptación: lint, build, Next.js best practices, y comparación visual con mockups vía Playwright.",
@@ -22,6 +23,14 @@
         }
       }
     }
+  
+  },
+  "references": {
+    "docs": {
+      "path": "../07-DB-Schema",
+      "description": "Documentación de la base de datos y el esquema de datos."
+
+    }
   },
   "permission": {
     "external_directory": {
@@ -39,6 +48,11 @@
       ],
       "enabled": true,
       "environment": {}
+    },
+    "supabase": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?project_ref=bkkuthaqnbxnfvmzwdbq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage",
+      "enabled": true
     }
   }
 }
