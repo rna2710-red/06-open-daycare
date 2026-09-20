@@ -1,6 +1,6 @@
 # SPEC 06 — Modal "Nueva publicación"
 
-> **Estado:** Implementado
+> **Estado:** Implementado!!!
 > **Depende de:** SPEC 01, SPEC 02
 > **Fecha:** 2026-09-18
 > **Objetivo:** Implementar el modal "Nueva publicación" que se abre desde el botón "+ Nueva publicación" en el sidebar, replicando el mockup `crear-publicacion.dc.html` con selección de niños, tipo de publicación, descripción y fotos.
