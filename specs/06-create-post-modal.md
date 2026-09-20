@@ -1,6 +1,6 @@
 # SPEC 06 — Modal "Nueva publicación"
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01, SPEC 02
 > **Fecha:** 2026-09-18
 > **Objetivo:** Implementar el modal "Nueva publicación" que se abre desde el botón "+ Nueva publicación" en el sidebar, replicando el mockup `crear-publicacion.dc.html` con selección de niños, tipo de publicación, descripción y fotos.
@@ -72,32 +72,32 @@ No se introduce una nueva interfaz para la publicación. Los datos del formulari
 
 ## Criterios de aceptación
 
-- [ ] `npm run lint` pasa sin errores.
-- [ ] `npm run build` compila sin errores de tipos.
-- [ ] Click en "+ Nueva publicación" en el sidebar abre el modal.
-- [ ] El modal replica el mockup: header con "Cancelar", título "Nueva publicación", "Publicar".
-- [ ] Sección "PARA" muestra chips de niños con avatar (initial, color) usando datos de `kids.ts`.
-- [ ] Cada chip de niño tiene nombre y avatar circular con color de fondo y texto.
-- [ ] Chips de niños son seleccionables (múltiple): click activa/desactiva.
-- [ ] Estado seleccionado del chip: fondo `#3F362E`, borde `#3F362E`, texto `#fff`.
-- [ ] Estado no seleccionado del chip: fondo `#FFFDF9`, borde `#ECE0D0`, texto `#6E6359`.
-- [ ] Botón "Toda la sala" está presente en la sección PARA.
-- [ ] "Toda la sala" es seleccionable: click activa/desactiva, con el mismo estilo visual que los chips de niños.
-- [ ] Interacción cruzada: si hay niños seleccionados y se hace click en "Toda la sala", se desmarcan todos los niños individuales.
-- [ ] Interacción cruzada: si "Toda la sala" está seleccionado y se hace click en un niño individual, se deselecciona "Toda la sala" y se selecciona ese niño.
-- [ ] Sección "TIPO" muestra 7 chips de categoría: Comida, Siesta, Actividad, Logro, Ánimo, Foto, Anuncio.
-- [ ] Cada chip de tipo tiene el color de fondo y texto correcto según el mockup.
-- [ ] Selección de tipo es de uno solo: click en uno deselecciona el anterior.
-- [ ] Sección "DESCRIPCIÓN" tiene textarea con placeholder "Contá cómo le fue hoy…".
-- [ ] Sección "FOTOS" muestra dos cuadros: uno con icono de imagen y otro con "+" y "Agregar".
-- [ ] Click en "Cancelar" cierra el modal.
-- [ ] Click en "Publicar" cierra el modal y muestra toast "Publicación enviada".
-- [ ] Toast aparece fijo abajo al centro con fondo oscuro y texto blanco.
-- [ ] Toast se cierra automáticamente después de 3 segundos.
-- [ ] Click en el overlay oscuro cierra el modal.
-- [ ] A 1280×800 el modal se ve centrado y con el estilo del mockup.
-- [ ] Encabezados en Fredoka y cuerpo en Nunito.
-- [ ] No hay errores en consola.
+- [x] `npm run lint` pasa sin errores.
+- [x] `npm run build` compila sin errores de tipos.
+- [x] Click en "+ Nueva publicación" en el sidebar abre el modal.
+- [x] El modal replica el mockup: header con "Cancelar", título "Nueva publicación", "Publicar".
+- [x] Sección "PARA" muestra chips de niños con avatar (initial, color) usando datos de `kids.ts`.
+- [x] Cada chip de niño tiene nombre y avatar circular con color de fondo y texto.
+- [x] Chips de niños son seleccionables (múltiple): click activa/desactiva.
+- [x] Estado seleccionado del chip: fondo `#3F362E`, borde `#3F362E`, texto `#fff`.
+- [x] Estado no seleccionado del chip: fondo `#FFFDF9`, borde `#ECE0D0`, texto `#6E6359`.
+- [x] Botón "Toda la sala" está presente en la sección PARA.
+- [x] "Toda la sala" es seleccionable: click activa/desactiva, con el mismo estilo visual que los chips de niños.
+- [x] Interacción cruzada: si hay niños seleccionados y se hace click en "Toda la sala", se desmarcan todos los niños individuales.
+- [x] Interacción cruzada: si "Toda la sala" está seleccionado y se hace click en un niño individual, se deselecciona "Toda la sala" y se selecciona ese niño.
+- [x] Sección "TIPO" muestra 7 chips de categoría: Comida, Siesta, Actividad, Logro, Ánimo, Foto, Anuncio.
+- [x] Cada chip de tipo tiene el color de fondo y texto correcto según el mockup.
+- [x] Selección de tipo es de uno solo: click en uno deselecciona el anterior.
+- [x] Sección "DESCRIPCIÓN" tiene textarea con placeholder "Contá cómo le fue hoy…".
+- [x] Sección "FOTOS" muestra dos cuadros: uno con icono de imagen y otro con "+" y "Agregar".
+- [x] Click en "Cancelar" cierra el modal.
+- [x] Click en "Publicar" cierra el modal y muestra toast "Publicación enviada".
+- [x] Toast aparece fijo abajo al centro con fondo oscuro y texto blanco.
+- [x] Toast se cierra automáticamente después de 3 segundos.
+- [x] Click en el overlay oscuro cierra el modal.
+- [x] A 1280×800 el modal se ve centrado y con el estilo del mockup.
+- [x] Encabezados en Fredoka y cuerpo en Nunito.
+- [x] No hay errores en consola.
 
 ## Decisiones
 
