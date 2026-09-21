@@ -84,14 +84,14 @@ INSERT INTO daycares (name, address) VALUES
 
 ## Criterios de aceptación
 
-- [ ] La tabla `daycares` existe en Supabase con los campos `id`, `name`, `address`, `created_at`.
-- [ ] RLS está habilitado en `daycares`.
-- [ ] Policy de SELECT existe para `authenticated`.
-- [ ] Policy de ALL existe para `service_role`.
-- [ ] GRANT de SELECT existe para `anon` y `authenticated`.
-- [ ] Seed inserta 4 guarderías correctamente.
-- [ ] "Sala Soles" es una de las guarderías insertadas.
-- [ ] `supabase_get_advisors` tipo `security` no reporta issues para `daycares`.
+- [x] La tabla `daycares` existe en Supabase con los campos `id`, `name`, `address`, `created_at`.
+- [x] RLS está habilitado en `daycares`.
+- [x] Policy de SELECT existe para `authenticated`.
+- [x] Policy de ALL existe para `service_role`.
+- [x] GRANT de SELECT existe para `anon` y `authenticated`.
+- [x] Seed inserta 4 guarderías correctamente.
+- [x] "Sala Soles" es una de las guarderías insertadas.
+- [x] `supabase_get_advisors` tipo `security` no reporta issues para `daycares`.
 
 ## Decisiones
 

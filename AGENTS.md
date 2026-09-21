@@ -41,6 +41,17 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `supabase` — Skill principal para cualquier tarea relacionada con Supabase: Database, Auth, Edge Functions, Realtime, Storage, RLS, migraciones, debugging. Siempre verificar contra la documentación actualizada antes de implementar.
 - `supabase-postgres-best-practices` — Best practices de Postgres mantenido por Supabase. Cargar ANTES de escribir o cambiar cualquier cosa en la base de datos: tablas, columnas, migraciones, RLS policies, indexes, triggers, funciones, rendimiento de queries.
 
+## Supabase Database — Reglas de migración
+
+**Siempre usar migraciones** para cualquier cambio en la base de datos. Nunca ejecutar DDL directo en producción.
+
+- Cada cambio de esquema (tablas, columnas, RLS, policies, GRANTs, functions, triggers) va en un archivo `.sql` dentro de `supabase/migrations/`.
+- Formato de nombre: `YYYYMMDDHHMMSS_descriptive_name.sql` (ej. `20260921_create_daycares.sql`).
+- Para aplicar: usar `supabase_apply_migration` (MCP) con el contenido del archivo SQL.
+- El archivo de migración es la **fuente de verdad** del esquema. Si hay diff entre el archivo y la BD, el archivo gana.
+- Las migraciones son **inmutables** una vez aplicadas. Para corregir, crear una nueva migración.
+- El spec debe incluir el SQL completo de la migración en la sección "Modelo de datos".
+
 ## Agents
 
 - `spec-verifier` — Valida y corrige los criterios de aceptación de un spec. Ejecuta lint, build, verifica Next.js best practices vía Context7, compara screenshots con mockups usando Playwright, y corrige tanto el spec como el código cuando hay desviaciones. Guarda screenshots en `.playwright-mcp/`.
