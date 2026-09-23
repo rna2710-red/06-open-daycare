@@ -18,7 +18,20 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Next.js 16 (App Router) + React 19 + TypeScript strict. App dir is `app/` at repo root (no `src/`).
 - Tailwind v4, CSS-first config: theme tokens live in `app/globals.css` (`@import "tailwindcss"` + `@theme`). There is no `tailwind.config.js` — don't create one.
-- **Supabase** — Backend as a Service: base de datos Postgres, autenticación, Edge Functions, Storage, Realtime.
+- **Supabase** — Backend as a Service: base de datos Postgres, autenticación, Edge Functions, Storage, Realtime. Paquetes: `@supabase/supabase-js` + `@supabase/ssr`.
+
+## Supabase Client Setup
+
+Helpers en `utils/supabase/` para interactuar con Supabase desde Next.js:
+
+- `server.ts` — Client helper para Server Components y Route Handlers. Recibe `cookies()` como parámetro.
+- `client.ts` — Client helper para Client Components (browser). Se usa con `"use client"`.
+- `middleware.ts` — Helper para middleware que mantiene las sesiones refresh.
+
+**Uso:**
+- Server Components: `import { createClient } from '@/utils/supabase/server'` → `createClient(cookieStore)`
+- Client Components: `import { createClient } from '@/utils/supabase/client'` → `createClient()`
+- Middleware: `import { createClient } from '@/utils/supabase/middleware'` → `createClient(request)`
 
 ## UI source of truth: `references/`
 
