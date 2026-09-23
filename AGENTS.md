@@ -30,6 +30,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Spec-driven workflow
 
 - Features are designed with the `spec` skill (specs are saved under `specs/`) and implemented with `spec-impl`, which creates a branch named after the spec. Both live in `.agents/skills/`.
+- **Specs de base de datos**: cualquier spec que tenga que ver con la base de datos (migraciones, tablas, columnas, RLS, funciones, indexes, etc.) debe guardarse en `specs/database/`.
 - /spec Usaremos esta habilidad para crear las especificaciones.
 - /spec-impl Usaremos esta skill para hacer las implementaciones.
 
