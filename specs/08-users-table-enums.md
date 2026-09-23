@@ -1,6 +1,6 @@
 # SPEC 08 — Tabla `users` + enums + trigger
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 07 (tabla `daycares`)
 > **Fecha:** 2026-09-21
 > **Objetivo:** Crear la tabla `users` en Supabase con enums `user_role` y `user_status`, RLS, trigger de Supabase Auth y seed de usuario staff de prueba.
@@ -122,19 +122,19 @@ INSERT INTO auth.users (
 
 ## Criterios de aceptación
 
-- [ ] Los enums `user_role` y `user_status` existen con los valores correctos.
-- [ ] La tabla `users` existe con todos los campos del esquema de BD.
-- [ ] FK `id` → `auth.users(id)` ON DELETE CASCADE está definida.
-- [ ] FK `daycare_id` → `daycares(id)` está definida.
-- [ ] RLS está habilitado en `users`.
-- [ ] Policy de SELECT para `authenticated` filtra por `auth.uid() = id`.
-- [ ] Policy de ALL para `service_role` existe.
-- [ ] GRANT de SELECT para `anon` y `authenticated` existe.
-- [ ] Trigger `on_auth_user_created` existe y ejecuta `handle_new_user()`.
-- [ ] El trigger crea la fila en `users` al insertar en `auth.users`.
-- [ ] Usuario staff `jose@staff.com` existe en `users` con `role = 'staff'`.
-- [ ] El usuario staff tiene `daycare_id` apuntando a "Sala Soles".
-- [ ] `supabase_get_advisors` tipo `security` no reporta issues para `users`.
+- [x] Los enums `user_role` y `user_status` existen con los valores correctos.
+- [x] La tabla `users` existe con todos los campos del esquema de BD.
+- [x] FK `id` → `auth.users(id)` ON DELETE CASCADE está definida.
+- [x] FK `daycare_id` → `daycares(id)` está definida.
+- [x] RLS está habilitado en `users`.
+- [x] Policy de SELECT para `authenticated` filtra por `auth.uid() = id`.
+- [x] Policy de ALL para `service_role` existe.
+- [x] GRANT de SELECT para `anon` y `authenticated` existe.
+- [x] Trigger `on_auth_user_created` existe y ejecuta `handle_new_user()`.
+- [x] El trigger crea la fila en `users` al insertar en `auth.users`.
+- [x] Usuario staff `jose@staff.com` existe en `users` con `role = 'staff'`.
+- [x] El usuario staff tiene `daycare_id` apuntando a "Sala Soles".
+- [x] `supabase_get_advisors` tipo `security` no reporta issues para `users`.
 
 ## Decisiones
 
