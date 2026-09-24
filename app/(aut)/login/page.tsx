@@ -1,8 +1,38 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (authError) {
+      setError("Credenciales inválidas. Intentá de nuevo.");
+      return;
+    }
+
+    router.push("/");
+  };
+
   return (
     <div
       className="flex min-h-screen flex-col md:grid md:grid-cols-[1.05fr_1fr]"
@@ -158,7 +188,7 @@ export default function LoginPage() {
             Ingresá para ver el día de hoy.
           </p>
 
-          <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-5">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {/* Email */}
             <div>
               <label
@@ -171,6 +201,8 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-[14px] border border-[#EADFD0] bg-white px-4 py-3.5 text-[15px] text-tinta outline-none transition-colors placeholder:text-tinta-mute focus:border-coral"
               />
             </div>
@@ -187,6 +219,8 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-[14px] border border-[#EADFD0] bg-white px-4 py-3.5 text-[15px] text-tinta outline-none transition-colors placeholder:text-tinta-mute focus:border-coral"
               />
             </div>
@@ -201,15 +235,23 @@ export default function LoginPage() {
               </a>
             </div>
 
+            {/* Error */}
+            {error && (
+              <p className="text-center text-[14px] font-semibold text-red-500">
+                {error}
+              </p>
+            )}
+
             {/* Botón Iniciar sesión */}
             <button
               type="submit"
-              className="w-full rounded-[15px] py-[15px] text-[16px] font-extrabold text-white shadow-[0_6px_20px_-6px_rgba(238,129,100,.55)] transition-opacity hover:opacity-90"
+              disabled={loading}
+              className="w-full rounded-[15px] py-[15px] text-[16px] font-extrabold text-white shadow-[0_6px_20px_-6px_rgba(238,129,100,.55)] transition-opacity hover:opacity-90 disabled:opacity-60"
               style={{
                 background: "linear-gradient(135deg, #F4977E, #EE8164)",
               }}
             >
-              Iniciar sesión
+              {loading ? "Ingresando..." : "Iniciar sesión"}
             </button>
           </form>
 
