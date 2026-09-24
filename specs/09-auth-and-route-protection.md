@@ -1,6 +1,6 @@
 # SPEC 09 — Autenticación login + protección de rutas
 
-> **Estado:** Borrador
+> **Estado:** Aprobado
 > **Depende de:** SPEC 08 (tabla `users` + trigger)
 > **Fecha:** 2026-09-23
 > **Objetivo:** Implementar login real con email/password contra Supabase, protección de rutas con middleware y provider global de usuario.
