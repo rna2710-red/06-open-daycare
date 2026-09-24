@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { signOut as signOutAction } from "@/app/actions/auth";
 import type { User } from "@supabase/supabase-js";
 
 interface UserProfile {
@@ -79,10 +80,7 @@ export function Providers({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
+    await signOutAction();
   };
 
   return (
