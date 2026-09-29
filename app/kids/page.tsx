@@ -109,6 +109,7 @@ export default function KidsPage() {
   const [children, setChildren] = useState<Child[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [selectedRoom, setSelectedRoom] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchData = useCallback(async () => {
     const supabase = createClient();
@@ -127,12 +128,17 @@ export default function KidsPage() {
     setChildren((childrenData as DbChild[] | null)?.map(mapDbChildToChild) ?? []);
   }, []);
 
-  const filteredChildren = selectedRoom === "all"
-    ? children
-    : children.filter((child) => {
-        const room = rooms.find((r) => r.name === child.room);
-        return room?.id === selectedRoom;
-      });
+  const filteredChildren = children.filter((child) => {
+    const matchesRoom = selectedRoom === "all" || (() => {
+      const room = rooms.find((r) => r.name === child.room);
+      return room?.id === selectedRoom;
+    })();
+    const query = searchQuery.toLowerCase();
+    const matchesSearch = query === "" ||
+      child.name.toLowerCase().includes(query) ||
+      child.room.toLowerCase().includes(query);
+    return matchesRoom && matchesSearch;
+  });
 
   useEffect(() => {
     fetchData();
@@ -164,6 +170,8 @@ export default function KidsPage() {
             {searchIcon}
             <input
               placeholder="Buscar niño…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 border-none bg-transparent text-[15px] text-tinta placeholder:text-[#B6A99B] focus:outline-none"
             />
           </div>
