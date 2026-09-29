@@ -108,6 +108,7 @@ export default function KidsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [children, setChildren] = useState<Child[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState("all");
 
   const fetchData = useCallback(async () => {
     const supabase = createClient();
@@ -125,6 +126,13 @@ export default function KidsPage() {
 
     setChildren((childrenData as DbChild[] | null)?.map(mapDbChildToChild) ?? []);
   }, []);
+
+  const filteredChildren = selectedRoom === "all"
+    ? children
+    : children.filter((child) => {
+        const room = rooms.find((r) => r.name === child.room);
+        return room?.id === selectedRoom;
+      });
 
   useEffect(() => {
     fetchData();
@@ -161,17 +169,41 @@ export default function KidsPage() {
           </div>
 
           <div className="mb-3.5 flex items-center gap-3">
-            <span className="text-[12.5px] font-extrabold tracking-[.8px] text-tinta">
-              TODOS
-            </span>
+            <div className="relative">
+              <select
+                value={selectedRoom}
+                onChange={(e) => setSelectedRoom(e.target.value)}
+                className="appearance-none rounded-full border border-borde bg-superficie px-3 py-1.5 pr-8 text-[12.5px] font-extrabold tracking-[.8px] text-tinta focus:outline-none"
+              >
+                <option value="all">Todas las salas</option>
+                {rooms.map((room) => (
+                  <option key={room.id} value={room.id}>
+                    {room.name}
+                  </option>
+                ))}
+              </select>
+              <svg
+                className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#94887B"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
             <span className="text-[13px] text-tinta-mute">
-              {children.length} niños
+              {filteredChildren.length} niños
             </span>
             <span className="h-px flex-1 bg-[#E7DAC8]" />
           </div>
 
           <div className="grid grid-cols-2 gap-3.5">
-            {children.map((child) => (
+            {filteredChildren.map((child) => (
               <KidCard key={child.id} child={child} />
             ))}
           </div>
