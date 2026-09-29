@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sidebar } from "@/app/components/shared/Sidebar";
 import { KidCard } from "@/app/components/kids/KidCard";
 import AddChildModal from "@/app/components/kids/AddChildModal";
-import { children } from "@/lib/mock/kids";
+import { children, rooms } from "@/lib/mock/kids";
 
 const searchIcon = (
   <svg
@@ -87,7 +87,7 @@ export default function KidsPage() {
           </div>
         </div>
       </main>
-      <AddChildModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddChildModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} rooms={rooms} onSave={() => {}} />
     </div>
   );
 }
