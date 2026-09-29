@@ -1,6 +1,6 @@
 # SPEC 09 — Autenticación login + protección de rutas
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 08 (tabla `users` + trigger)
 > **Fecha:** 2026-09-23
 > **Objetivo:** Implementar login real con email/password contra Supabase, protección de rutas con middleware y provider global de usuario.
@@ -77,18 +77,18 @@ interface UserProfile {
 
 ## Criterios de aceptación
 
-- [ ] `npm run lint` pasa sin errores.
-- [ ] `npm run build` compila sin errores de tipos.
-- [ ] El formulario de login en `/login` acepta email y password, y ejecuta `signInWithPassword` contra Supabase.
-- [ ] Login exitoso redirige a `/`.
-- [ ] Credenciales inválidas muestran un mensaje de error en el formulario (sin redirigir).
-- [ ] El proxy redirige a `/login` cuando un usuario no autenticado intenta acceder a una ruta privada.
-- [ ] El proxy redirige a `/` cuando un usuario autenticado visita `/login`.
-- [ ] `/activate` es accesible sin autenticación.
-- [ ] El User Provider está en el layout raíz y expone `user`, `profile`, `loading` y `signOut`.
-- [ ] El profile se obtiene de la tabla `users` (no solo de `auth.users`).
-- [ ] La función `signOut` está disponible en el Context del User Provider.
-- [ ] No hay errores en consola durante el flujo de login → home → logout.
+- [x] `npm run lint` pasa sin errores.
+- [x] `npm run build` compila sin errores de tipos.
+- [x] El formulario de login en `/login` acepta email y password, y ejecuta `signInWithPassword` contra Supabase.
+- [x] Login exitoso redirige a `/`.
+- [x] Credenciales inválidas muestran un mensaje de error en el formulario (sin redirigir).
+- [x] El proxy redirige a `/login` cuando un usuario no autenticado intenta acceder a una ruta privada.
+- [x] El proxy redirige a `/` cuando un usuario autenticado visita `/login`.
+- [x] `/activate` es accesible sin autenticación.
+- [x] El User Provider está en el layout raíz y expone `user`, `profile`, `loading` y `signOut`.
+- [x] El profile se obtiene de la tabla `users` (no solo de `auth.users`).
+- [x] La función `signOut` está disponible en el Context del User Provider.
+- [x] No hay errores en consola durante el flujo de login → home → logout.
 
 ## Decisiones
 

@@ -1,23 +1,30 @@
-import { createClient } from "@/utils/supabase/proxy";
 import { type NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/middleware";
 
 const PUBLIC_ROUTES = ["/login", "/activate"];
 
 export async function proxy(request: NextRequest) {
-  const { supabase, response } = await createClient(request);
-  const { pathname } = request.nextUrl;
+  const response = NextResponse.next({
+    request: { headers: request.headers },
+  });
+
+  const supabase = createClient(request, response);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
 
   const isPublicRoute = PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
+    (route) => pathname === route || pathname.startsWith(route + "/"),
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (isPublicRoute && session) {
+  if (isPublicRoute && user) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (!isPublicRoute && !session) {
+  if (!isPublicRoute && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

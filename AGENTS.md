@@ -33,6 +33,21 @@ Helpers en `utils/supabase/` para interactuar con Supabase desde Next.js:
 - Client Components: `import { createClient } from '@/utils/supabase/client'` → `createClient()`
 - Middleware: `import { createClient } from '@/utils/supabase/middleware'` → `createClient(request)`
 
+## Login — Fix conocido (2026-09-29)
+
+El login no redirigía al home aunque las credenciales fueran correctas. Causa raíz doble:
+
+1. **Bug en `utils/supabase/middleware.ts`**: `getAll()` usaba `request.cookies.toString()` en vez de `request.headers.get("Cookie")`. El patrón correcto según Supabase SSR es leer el header raw `Cookie`:
+   ```ts
+   // ❌ Incorrecto
+   getAll() { return parseCookieHeader(request.cookies.toString()); }
+   // ✅ Correcto
+   getAll() { return parseCookieHeader(request.headers.get("Cookie") ?? ""); }
+   ```
+2. **Credenciales inválidas**: La contraseña en `auth.users` no coincidía con la esperada. Supabase rechazaba con HTTP 400 (`invalid_credentials`), por lo que el redirect nunca se ejecutaba.
+
+**Regla**: Al debuggear login, siempre verificar primero los logs de Supabase (`source: auth_logs`) para descartar credenciales incorrectas antes de revisar el código.
+
 ## UI source of truth: `references/`
 
 - `app/page.tsx` is still create-next-app boilerplate; the product design exists only in `references/`.
