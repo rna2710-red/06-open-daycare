@@ -1,6 +1,6 @@
 # SPEC 11 — Invitación de padre + email con Resend
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 08 (users), SPEC 09 (auth/proxy), SPEC 10 (children/rooms)
 > **Fecha:** 2026-09-30
 > **Objetivo:** Persistir la invitación de un padre/tutor para un niño y enviarle un correo con el código de activación usando Resend desde un server action de Next.js.
@@ -166,26 +166,26 @@ Mapping UI → DB:
 
 ## Criterios de aceptación
 
-- [ ] `npm run lint` pasa sin errores.
-- [ ] `npm run build` compila sin errores de tipos.
-- [ ] Enums `relationship_type` e `invitation_status` existen con los valores del esquema.
-- [ ] Tabla `invitations` existe con todos los campos del modelo de datos.
-- [ ] `code` tiene restricción UNIQUE.
-- [ ] RLS habilitado en `invitations`.
-- [ ] Policy de SELECT filtra por daycare del usuario autenticado.
-- [ ] Policy de INSERT exige `invited_by = auth.uid()` y niño del mismo daycare.
-- [ ] Paquete `resend` está en `package.json`.
-- [ ] `.env.template` incluye `RESEND_API_KEY`, `RESEND_FROM` y `APP_BASE_URL`.
-- [ ] `lib/email/invitation-email.ts` genera HTML en español con código y CTA a `/activate?code=…`.
-- [ ] Server action `createInvitation` inserta una fila `pending` con `expires_at` a 7 días.
-- [ ] El action genera el código en el servidor (no en el cliente).
-- [ ] Mapping Mamá/Papá/Tutor/a → `mother`/`father`/`guardian` al persistir.
-- [ ] `/vincular-padre` con niño real crea la invitación en Supabase.
-- [ ] Si Resend falla, la invitación queda `pending` y la UI muestra el código + error.
-- [ ] `/kids/[slug]` muestra al padre invitado con badge PENDIENTE.
-- [ ] `/kids/[slug]` no usa `lib/mock/kids.ts` para el perfil ni para vincular-padre.
-- [ ] `supabase_get_advisors` tipo `security` no reporta issues para `invitations`.
-- [ ] No hay errores en consola al crear invitación desde la UI.
+- [x] `npm run lint` pasa sin errores.
+- [x] `npm run build` compila sin errores de tipos.
+- [x] Enums `relationship_type` e `invitation_status` existen con los valores del esquema.
+- [x] Tabla `invitations` existe con todos los campos del modelo de datos.
+- [x] `code` tiene restricción UNIQUE.
+- [x] RLS habilitado en `invitations`.
+- [x] Policy de SELECT filtra por daycare del usuario autenticado.
+- [x] Policy de INSERT exige `invited_by = auth.uid()` y niño del mismo daycare.
+- [x] Paquete `resend` está en `package.json`.
+- [x] `.env.template` incluye `RESEND_API_KEY`, `RESEND_FROM` y `APP_BASE_URL`.
+- [x] `lib/email/invitation-email.ts` genera HTML en español con código y CTA a `/activate?code=…`.
+- [x] Server action `createInvitation` inserta una fila `pending` con `expires_at` a 7 días.
+- [x] El action genera el código en el servidor (no en el cliente).
+- [x] Mapping Mamá/Papá/Tutor/a → `mother`/`father`/`guardian` al persistir.
+- [x] `/vincular-padre` con niño real crea la invitación en Supabase.
+- [x] Si Resend falla, la invitación queda `pending` y la UI muestra el código + error.
+- [x] `/kids/[slug]` muestra al padre invitado con badge PENDIENTE.
+- [x] `/kids/[slug]` no usa `lib/mock/kids.ts` para el perfil ni para vincular-padre.
+- [x] `supabase_get_advisors` tipo `security` no reporta issues para `invitations`.
+- [x] No hay errores en consola al crear invitación desde la UI.
 
 ## Decisiones
 
