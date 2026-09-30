@@ -1,11 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { rooms } from "@/lib/mock/kids";
+import { addChild } from "@/app/actions/children";
+
+interface Room {
+  id: string;
+  name: string;
+}
 
 interface AddChildModalProps {
   isOpen: boolean;
   onClose: () => void;
+  rooms: Room[];
+  onSave: () => void;
 }
 
 const labelStyle = {
@@ -67,13 +74,21 @@ function formatAndValidateDate(value: string): {
   return { formatted, error: null };
 }
 
-export default function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
+export default function AddChildModal({ isOpen, onClose, rooms, onSave }: AddChildModalProps) {
   const [fullName, setFullName] = useState("");
   const [birthDate, setBirthDate] = useState("");
-  const [selectedRoom, setSelectedRoom] = useState(rooms[0].id);
+  const [selectedRoom, setSelectedRoom] = useState(rooms[0]?.id ?? "");
   const [allergies, setAllergies] = useState("");
   const [medicalNotes, setMedicalNotes] = useState("");
   const [dateError, setDateError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const effectiveRoomId = rooms.some((room) => room.id === selectedRoom)
+    ? selectedRoom
+    : (rooms[0]?.id ?? "");
+
+  const canSave = !!effectiveRoomId && !dateError && !isSaving;
 
   if (!isOpen) return null;
 
@@ -122,21 +137,65 @@ export default function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
             Agregar niño
           </span>
           <button
-            onClick={onClose}
-            disabled={!!dateError}
+            onClick={async () => {
+              setIsSaving(true);
+              setSaveError(null);
+              if (!effectiveRoomId) {
+                setSaveError("Selecciona una sala");
+                setIsSaving(false);
+                return;
+              }
+              try {
+                const parts = birthDate.split("/");
+                const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                const allergyList = allergies
+                  .split(",")
+                  .map((a) => a.trim())
+                  .filter(Boolean);
+                await addChild({
+                  fullName,
+                  birthDate: isoDate,
+                  roomId: effectiveRoomId,
+                  medicalNotes: medicalNotes || undefined,
+                  allergyTags: allergyList.length > 0 ? allergyList : undefined,
+                });
+                onSave();
+                onClose();
+              } catch (err) {
+                setSaveError(err instanceof Error ? err.message : "Error al guardar");
+              } finally {
+                setIsSaving(false);
+              }
+            }}
+            disabled={!canSave}
             style={{
-              color: dateError ? "#B0A290" : "#D9583C",
+              color: canSave ? "#D9583C" : "#B0A290",
               fontWeight: 800,
               fontSize: "15px",
-              cursor: dateError ? "not-allowed" : "pointer",
+              cursor: canSave ? "pointer" : "not-allowed",
             }}
           >
-            Guardar
+            {isSaving ? "Guardando…" : "Guardar"}
           </button>
         </div>
 
         {/* Body */}
         <div style={{ padding: "24px 26px" }}>
+          {saveError && (
+            <div
+              style={{
+                color: "#D9583C",
+                fontSize: "13px",
+                fontWeight: 600,
+                marginBottom: "14px",
+                padding: "10px 14px",
+                borderRadius: "10px",
+                backgroundColor: "#FBE3D8",
+              }}
+            >
+              {saveError}
+            </div>
+          )}
           {/* Nombre Completo */}
           <div style={{ marginBottom: "18px" }}>
             <div style={labelStyle}>NOMBRE COMPLETO</div>
@@ -186,7 +245,7 @@ export default function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
               <div style={labelStyle}>SALA</div>
               <div className="relative">
                 <select
-                  value={selectedRoom}
+                  value={effectiveRoomId}
                   onChange={(e) => setSelectedRoom(e.target.value)}
                   style={{
                     ...inputStyle,
@@ -194,6 +253,11 @@ export default function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
                     paddingRight: "40px",
                   }}
                 >
+                  {rooms.length === 0 && (
+                    <option value="" disabled>
+                      No hay salas disponibles
+                    </option>
+                  )}
                   {rooms.map((room) => (
                     <option key={room.id} value={room.id}>
                       {room.name}

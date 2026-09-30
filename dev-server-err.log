@@ -1,0 +1,33 @@
+⨯ Error: invalid input syntax for type uuid: ""
+    at addChild (app\actions\children.ts:33:11)
+  31 |
+  32 |   if (error) {
+> 33 |     throw new Error(error.message);
+     |           ^
+  34 |   }
+  35 |
+  36 |   return data; {
+  digest: '2143243276'
+}
+⨯ Error: invalid input syntax for type uuid: ""
+    at addChild (app\actions\children.ts:33:11)
+  31 |
+  32 |   if (error) {
+> 33 |     throw new Error(error.message);
+     |           ^
+  34 |   }
+  35 |
+  36 |   return data; {
+  digest: '2143243276'
+}
+⨯ Error: invalid input syntax for type uuid: ""
+    at addChild (app\actions\children.ts:33:11)
+  31 |
+  32 |   if (error) {
+> 33 |     throw new Error(error.message);
+     |           ^
+  34 |   }
+  35 |
+  36 |   return data; {
+  digest: '2143243276'
+}
