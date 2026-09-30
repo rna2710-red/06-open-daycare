@@ -1,6 +1,6 @@
 # SPEC 10 — Tablas rooms/children, agregar niño funcional, búsqueda y selector de sala
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 08 (tabla `users` + enums)
 > **Fecha:** 2026-09-29
 > **Objetivo:** Crear tablas `rooms` y `children`, conectar el modal de agregar niño a Supabase, e implementar búsqueda y selector de sala en `/kids`.
