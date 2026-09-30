@@ -1,8 +1,13 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { children, generateInvitationCode } from "@/lib/mock/kids";
+import { useEffect, useState } from "react";
+import Toast from "@/app/components/shared/Toast";
+import {
+  createInvitation,
+  type RelationshipType,
+} from "@/app/actions/invitations";
+import { createClient } from "@/utils/supabase/client";
 
 const closeIcon = (
   <svg
@@ -51,34 +56,98 @@ const sendIcon = (
   </svg>
 );
 
-const roles = ["Mamá", "Papá", "Tutor/a"] as const;
+const roles: { label: string; value: RelationshipType }[] = [
+  { label: "Mamá", value: "mother" },
+  { label: "Papá", value: "father" },
+  { label: "Tutor/a", value: "guardian" },
+];
 
 export default function LinkParentPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
-  const child = children.find((c) => c.id === slug);
 
+  const [childName, setChildName] = useState<string | null>(null);
+  const [childNotFound, setChildNotFound] = useState(false);
   const [parentName, setParentName] = useState("");
   const [email, setEmail] = useState("");
-  const [selectedRole, setSelectedRole] = useState<string>("Mamá");
-  const [code] = useState(() => generateInvitationCode());
+  const [selectedRole, setSelectedRole] = useState<RelationshipType>("mother");
+  const [invitationCode, setInvitationCode] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [isToastVisible, setIsToastVisible] = useState(false);
 
-  if (!child) {
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadChild() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("children")
+        .select("id, full_name")
+        .eq("id", slug)
+        .single();
+
+      if (cancelled) return;
+
+      if (!data) {
+        setChildNotFound(true);
+        return;
+      }
+
+      setChildName(data.full_name);
+    }
+
+    loadChild();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  const handleClose = () => {
+    router.push(`/kids/${slug}`);
+  };
+
+  const handleSend = async () => {
+    if (isSubmitting) return;
+
+    setErrorMessage(null);
+    setInvitationCode(null);
+    setIsSubmitting(true);
+
+    const result = await createInvitation({
+      childId: slug,
+      fullName: parentName,
+      email,
+      relationship: selectedRole,
+    });
+
+    setIsSubmitting(false);
+
+    if (result.success) {
+      setToastMessage("Invitación enviada");
+      setIsToastVisible(true);
+      router.push(`/kids/${slug}`);
+      return;
+    }
+
+    if (result.code) {
+      setInvitationCode(result.code);
+      setErrorMessage(result.error);
+      return;
+    }
+
+    setErrorMessage(result.error);
+  };
+
+  if (childNotFound) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-fondo">
         <p className="text-tinta-suave">Niño no encontrado</p>
       </div>
     );
   }
-
-  const handleClose = () => {
-    router.push(`/kids/${slug}`);
-  };
-
-  const handleSend = () => {
-    router.push(`/kids/${slug}`);
-  };
 
   return (
     <div className="flex min-h-dvh items-start justify-center bg-fondo px-6 py-10">
@@ -90,7 +159,7 @@ export default function LinkParentPage() {
               Vincular padre
             </div>
             <div className="text-[13px] text-[#A89A8B]">
-              a {child.name}
+              {childName ? `a ${childName}` : "…"}
             </div>
           </div>
           <button
@@ -108,7 +177,9 @@ export default function LinkParentPage() {
             {infoIcon}
             <span className="text-[13.5px] leading-[1.45] text-[#3F5694]">
               Le enviaremos un correo con un código para que active su cuenta.
-              Solo verá el feed de {child.name.split(" ")[0]}.
+              {childName
+                ? ` Solo verá el feed de ${childName.split(" ")[0]}.`
+                : ""}
             </span>
           </div>
 
@@ -142,11 +213,12 @@ export default function LinkParentPage() {
           </div>
           <div className="mb-5 flex gap-[9px]">
             {roles.map((role) => {
-              const isSelected = selectedRole === role;
+              const isSelected = selectedRole === role.value;
               return (
                 <button
-                  key={role}
-                  onClick={() => setSelectedRole(role)}
+                  key={role.value}
+                  type="button"
+                  onClick={() => setSelectedRole(role.value)}
                   className="flex-1 rounded-full border-[1.5px] px-3 py-[11px] text-[14px] font-extrabold"
                   style={{
                     borderColor: isSelected ? "#9FB8EC" : "#ECE0D0",
@@ -154,34 +226,55 @@ export default function LinkParentPage() {
                     color: isSelected ? "#4E72C8" : "#6E6359",
                   }}
                 >
-                  {role}
+                  {role.label}
                 </button>
               );
             })}
           </div>
 
-          {/* Código de invitación */}
-          <div className="mb-5 rounded-[16px] border-[1.5px] border-dashed border-[#E6D08A] bg-[#FBF1D6] p-[18px] text-center">
-            <div className="mb-2 text-[12px] font-extrabold tracking-[.7px] text-[#A88526]">
-              CÓDIGO DE INVITACIÓN
+          {/* Código de invitación — solo después de crear la invitación */}
+          {invitationCode && (
+            <div className="mb-5 rounded-[16px] border-[1.5px] border-dashed border-[#E6D08A] bg-[#FBF1D6] p-[18px] text-center">
+              <div className="mb-2 text-[12px] font-extrabold tracking-[.7px] text-[#A88526]">
+                CÓDIGO DE INVITACIÓN
+              </div>
+              <div
+                suppressHydrationWarning
+                className="font-display text-[34px] font-semibold tracking-[7px] text-[#8A7234]"
+              >
+                {invitationCode}
+              </div>
+              <div className="mt-1.5 text-[13px] text-[#A88526]">
+                Vence en 7 días
+              </div>
             </div>
-            <div suppressHydrationWarning className="font-display text-[34px] font-semibold tracking-[7px] text-[#8A7234]">
-              {code}
+          )}
+
+          {/* Error */}
+          {errorMessage && (
+            <div className="mb-5 rounded-[14px] border-[1.5px] border-[#F2B4AD] bg-[#FBDAD6] px-4 py-3 text-[14px] leading-[1.45] text-[#C5413A]">
+              {errorMessage}
             </div>
-            <div className="mt-1.5 text-[13px] text-[#A88526]">
-              Vence en 7 días
-            </div>
-          </div>
+          )}
 
           {/* Enviar */}
           <button
+            type="button"
             onClick={handleSend}
-            className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-gradient-to-b from-[#F4977E] to-[#EE8164] px-4 py-[14px] text-[15.5px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,.7)]"
+            disabled={isSubmitting || !childName}
+            className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-gradient-to-b from-[#F4977E] to-[#EE8164] px-4 py-[14px] text-[15.5px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,.7)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {sendIcon}Enviar invitación
+            {sendIcon}
+            {isSubmitting ? "Enviando…" : "Enviar invitación"}
           </button>
         </div>
       </div>
+
+      <Toast
+        message={toastMessage}
+        isVisible={isToastVisible}
+        onClose={() => setIsToastVisible(false)}
+      />
     </div>
   );
 }
