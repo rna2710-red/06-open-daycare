@@ -17,20 +17,36 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const supabase = createClient();
+      console.log("[Login] Attempting signInWithPassword for:", email);
 
-    setLoading(false);
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (authError) {
-      setError("Credenciales inválidas. Intentá de nuevo.");
-      return;
+      console.log("[Login] signInWithPassword result:", {
+        hasUser: !!data?.user,
+        hasSession: !!data?.session,
+        error: authError?.message,
+      });
+
+      setLoading(false);
+
+      if (authError) {
+        console.error("[Login] Auth error:", authError.message);
+        setError(authError.message || "Credenciales inválidas. Intentá de nuevo.");
+        return;
+      }
+
+      console.log("[Login] Navigating to /kids...");
+      router.push("/kids");
+    } catch (err) {
+      console.error("[Login] Unexpected error:", err);
+      setLoading(false);
+      setError("Error inesperado. Intentá de nuevo.");
     }
-
-    router.push("/");
   };
 
   return (

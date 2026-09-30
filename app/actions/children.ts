@@ -13,6 +13,13 @@ interface AddChildInput {
 }
 
 export async function addChild(input: AddChildInput) {
+  const UUID_REGEX =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  if (!UUID_REGEX.test(input.roomId)) {
+    throw new Error("Sala no válida");
+  }
+
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 

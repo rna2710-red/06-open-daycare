@@ -84,6 +84,12 @@ export default function AddChildModal({ isOpen, onClose, rooms, onSave }: AddChi
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  const effectiveRoomId = rooms.some((room) => room.id === selectedRoom)
+    ? selectedRoom
+    : (rooms[0]?.id ?? "");
+
+  const canSave = !!effectiveRoomId && !dateError && !isSaving;
+
   if (!isOpen) return null;
 
   return (
@@ -134,6 +140,11 @@ export default function AddChildModal({ isOpen, onClose, rooms, onSave }: AddChi
             onClick={async () => {
               setIsSaving(true);
               setSaveError(null);
+              if (!effectiveRoomId) {
+                setSaveError("Selecciona una sala");
+                setIsSaving(false);
+                return;
+              }
               try {
                 const parts = birthDate.split("/");
                 const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
@@ -144,7 +155,7 @@ export default function AddChildModal({ isOpen, onClose, rooms, onSave }: AddChi
                 await addChild({
                   fullName,
                   birthDate: isoDate,
-                  roomId: selectedRoom,
+                  roomId: effectiveRoomId,
                   medicalNotes: medicalNotes || undefined,
                   allergyTags: allergyList.length > 0 ? allergyList : undefined,
                 });
@@ -156,12 +167,12 @@ export default function AddChildModal({ isOpen, onClose, rooms, onSave }: AddChi
                 setIsSaving(false);
               }
             }}
-            disabled={!!dateError || isSaving}
+            disabled={!canSave}
             style={{
-              color: dateError || isSaving ? "#B0A290" : "#D9583C",
+              color: canSave ? "#D9583C" : "#B0A290",
               fontWeight: 800,
               fontSize: "15px",
-              cursor: dateError || isSaving ? "not-allowed" : "pointer",
+              cursor: canSave ? "pointer" : "not-allowed",
             }}
           >
             {isSaving ? "Guardando…" : "Guardar"}
@@ -234,7 +245,7 @@ export default function AddChildModal({ isOpen, onClose, rooms, onSave }: AddChi
               <div style={labelStyle}>SALA</div>
               <div className="relative">
                 <select
-                  value={selectedRoom}
+                  value={effectiveRoomId}
                   onChange={(e) => setSelectedRoom(e.target.value)}
                   style={{
                     ...inputStyle,
@@ -242,6 +253,11 @@ export default function AddChildModal({ isOpen, onClose, rooms, onSave }: AddChi
                     paddingRight: "40px",
                   }}
                 >
+                  {rooms.length === 0 && (
+                    <option value="" disabled>
+                      No hay salas disponibles
+                    </option>
+                  )}
                   {rooms.map((room) => (
                     <option key={room.id} value={room.id}>
                       {room.name}

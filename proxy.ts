@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
   );
 
   if (isPublicRoute && user) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/kids", request.url));
   }
 
   if (!isPublicRoute && !user) {

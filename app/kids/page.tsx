@@ -141,8 +141,24 @@ export default function KidsPage() {
   });
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    async function load() {
+      const supabase = createClient();
+
+      const { data: roomsData } = await supabase
+        .from("rooms")
+        .select("id, name");
+
+      setRooms(roomsData ?? []);
+
+      const { data: childrenData } = await supabase
+        .from("children")
+        .select("id, full_name, birth_date, room_id, allergy_tags, medical_notes, rooms(name)")
+        .eq("status", "active");
+
+      setChildren((childrenData as DbChild[] | null)?.map(mapDbChildToChild) ?? []);
+    }
+    load();
+  }, []);
 
   return (
     <div className="flex h-dvh flex-col bg-fondo md:flex-row">
