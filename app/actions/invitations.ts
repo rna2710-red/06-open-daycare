@@ -24,11 +24,13 @@ export type ActivateInvitationResult =
   | { success: true }
   | { success: false; error: string; showLoginLink?: boolean };
 
+export type RelationshipType = "father" | "mother" | "guardian";
+
 export type CreateInvitationInput = {
   childId: string;
   fullName: string;
   email: string;
-  relationship: "mother" | "father" | "guardian";
+  relationship: RelationshipType;
 };
 
 export type CreateInvitationResult =
@@ -39,12 +41,18 @@ const MIN_PASSWORD_LENGTH = 8;
 const INVITATION_TTL_DAYS = 7;
 const CODE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const CODE_LENGTH = 5;
+const CODE_MAX_ATTEMPTS = 5;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const RELATIONSHIPS: RelationshipType[] = ["father", "mother", "guardian"];
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function generateInvitationCode(): string {
   let code = "";
   for (let i = 0; i < CODE_LENGTH; i += 1) {
-    code += CODE_ALPHABET.charAt(Math.floor(Math.random() * CODE_ALPHABET.length));
+    code += CODE_ALPHABET.charAt(
+      Math.floor(Math.random() * CODE_ALPHABET.length)
+    );
   }
   return code;
 }
@@ -135,8 +143,12 @@ export async function createInvitation(
     return { success: false, error: "Ingresá un email válido." };
   }
 
-  if (!["mother", "father", "guardian"].includes(relationship)) {
+  if (!RELATIONSHIPS.includes(relationship)) {
     return { success: false, error: "Seleccioná un parentesco válido." };
+  }
+
+  if (!UUID_REGEX.test(input.childId)) {
+    return { success: false, error: "Niño no válido." };
   }
 
   const cookieStore = await cookies();
@@ -189,7 +201,7 @@ export async function createInvitation(
   let code = generateInvitationCode();
   let invitation: { id: string; code: string } | null = null;
 
-  for (let attempt = 0; attempt < 5; attempt += 1) {
+  for (let attempt = 0; attempt < CODE_MAX_ATTEMPTS; attempt += 1) {
     const { data, error } = await supabase
       .from("invitations")
       .insert({
@@ -262,8 +274,7 @@ export async function createInvitation(
         success: true,
         code: invitation.code,
         emailSent: false,
-        error:
-          "El correo no se pudo enviar. Pasale este código al padre.",
+        error: "El correo no se pudo enviar. Pasale este código al padre.",
       };
     }
 
