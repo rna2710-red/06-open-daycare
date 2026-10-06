@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { Sidebar } from "@/app/components/shared/Sidebar";
+import LinkParentTrigger from "@/app/components/kids/LinkParentTrigger";
 import { adminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 
@@ -49,21 +50,6 @@ const sunIcon = (
   >
     <circle cx="12" cy="12" r="4" />
     <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4-1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-  </svg>
-);
-
-const plusIcon = (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#B0A290"
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 5v14M5 12h14" />
   </svg>
 );
 
@@ -359,17 +345,10 @@ export default async function ChildProfilePage({
                     );
                   })}
 
-                  <Link
-                    href={`/kids/${slug}/vincular-padre`}
-                    className="flex items-center gap-3 pt-2"
-                  >
-                    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-[#D8CBBA] text-[#B0A290]">
-                      {plusIcon}
-                    </span>
-                    <span className="text-[14.5px] font-extrabold text-acento-oscuro">
-                      Vincular otro padre
-                    </span>
-                  </Link>
+                  <LinkParentTrigger
+                    childId={slug}
+                    childName={child.full_name}
+                  />
                 </div>
               </div>
             </div>

@@ -2,8 +2,10 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Resend } from "resend";
 import { adminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
+import { buildInvitationEmail } from "@/lib/email/invitation-email";
 
 export type InvitationPreview = {
   childFullName: string;
@@ -22,7 +24,41 @@ export type ActivateInvitationResult =
   | { success: true }
   | { success: false; error: string; showLoginLink?: boolean };
 
+export type CreateInvitationInput = {
+  childId: string;
+  fullName: string;
+  email: string;
+  relationship: "mother" | "father" | "guardian";
+};
+
+export type CreateInvitationResult =
+  | { success: true; code: string; emailSent: boolean; error?: string }
+  | { success: false; error: string };
+
 const MIN_PASSWORD_LENGTH = 8;
+const INVITATION_TTL_DAYS = 7;
+const CODE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const CODE_LENGTH = 5;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function generateInvitationCode(): string {
+  let code = "";
+  for (let i = 0; i < CODE_LENGTH; i += 1) {
+    code += CODE_ALPHABET.charAt(Math.floor(Math.random() * CODE_ALPHABET.length));
+  }
+  return code;
+}
+
+function isUniqueCodeConflict(error: {
+  code?: string;
+  message?: string;
+} | null): boolean {
+  if (!error) return false;
+  return (
+    error.code === "23505" ||
+    (error.message ?? "").toLowerCase().includes("duplicate key")
+  );
+}
 
 function isDuplicateEmailError(error: {
   code?: string;
@@ -82,6 +118,168 @@ export async function getInvitationPreview(
     roomName: room?.name ?? "",
     email: data.email,
   };
+}
+
+export async function createInvitation(
+  input: CreateInvitationInput
+): Promise<CreateInvitationResult> {
+  const fullName = input.fullName.trim();
+  const email = input.email.trim().toLowerCase();
+  const relationship = input.relationship;
+
+  if (!fullName) {
+    return { success: false, error: "Ingresá el nombre del padre/madre." };
+  }
+
+  if (!EMAIL_REGEX.test(email)) {
+    return { success: false, error: "Ingresá un email válido." };
+  }
+
+  if (!["mother", "father", "guardian"].includes(relationship)) {
+    return { success: false, error: "Seleccioná un parentesco válido." };
+  }
+
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "Tu sesión expiró. Volvé a iniciar sesión." };
+  }
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role, daycare_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profile || profile.role !== "staff" || !profile.daycare_id) {
+    return {
+      success: false,
+      error: "Solo el staff de la guardería puede crear invitaciones.",
+    };
+  }
+
+  const { data: child } = await supabase
+    .from("children")
+    .select("id, full_name, rooms(daycare_id)")
+    .eq("id", input.childId)
+    .maybeSingle();
+
+  const room = Array.isArray(child?.rooms) ? child.rooms[0] : child?.rooms;
+
+  if (!child?.id || !room?.daycare_id) {
+    return { success: false, error: "No se pudo cargar el niño." };
+  }
+
+  if (room.daycare_id !== profile.daycare_id) {
+    return {
+      success: false,
+      error: "No tenés permiso para invitar padres de este niño.",
+    };
+  }
+
+  const expiresAt = new Date(
+    Date.now() + INVITATION_TTL_DAYS * 24 * 60 * 60 * 1000
+  ).toISOString();
+
+  let code = generateInvitationCode();
+  let invitation: { id: string; code: string } | null = null;
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const { data, error } = await supabase
+      .from("invitations")
+      .insert({
+        child_id: child.id,
+        invited_by: user.id,
+        full_name: fullName,
+        email,
+        relationship,
+        code,
+        status: "pending",
+        expires_at: expiresAt,
+      })
+      .select("id, code")
+      .single();
+
+    if (!error && data) {
+      invitation = data;
+      break;
+    }
+
+    if (isUniqueCodeConflict(error)) {
+      code = generateInvitationCode();
+      continue;
+    }
+
+    return {
+      success: false,
+      error: "No se pudo crear la invitación. Probá de nuevo.",
+    };
+  }
+
+  if (!invitation) {
+    return {
+      success: false,
+      error: "No se pudo crear la invitación. Probá de nuevo.",
+    };
+  }
+
+  const { subject, html } = buildInvitationEmail({
+    parentName: fullName,
+    childName: child.full_name,
+    code: invitation.code,
+  });
+
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const resendFrom =
+    process.env.RESEND_FROM ?? "OpenDayCare <onboarding@resend.dev>";
+
+  if (!resendApiKey) {
+    return {
+      success: true,
+      code: invitation.code,
+      emailSent: false,
+      error:
+        "La invitación se creó, pero no hay configuración de email. Pasale este código al padre.",
+    };
+  }
+
+  try {
+    const resend = new Resend(resendApiKey);
+    const { error: sendError } = await resend.emails.send({
+      from: resendFrom,
+      to: [email],
+      subject,
+      html,
+    });
+
+    if (sendError) {
+      return {
+        success: true,
+        code: invitation.code,
+        emailSent: false,
+        error:
+          "El correo no se pudo enviar. Pasale este código al padre.",
+      };
+    }
+
+    return {
+      success: true,
+      code: invitation.code,
+      emailSent: true,
+    };
+  } catch {
+    return {
+      success: true,
+      code: invitation.code,
+      emailSent: false,
+      error: "El correo no se pudo enviar. Pasale este código al padre.",
+    };
+  }
 }
 
 export async function activateInvitation(
