@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { children } from "@/lib/mock/kids";
 import { postTypes } from "@/lib/mock/feed";
 
@@ -11,34 +11,78 @@ interface CreatePostModalProps {
 }
 
 export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePostModalProps) {
-  const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
-  const [isAllSelected, setIsAllSelected] = useState(false);
-  const [selectedType, setSelectedType] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [selectedChildren, setSelectedChildren] = useState<string[] | "all">([]);
+  const [selectedType, setSelectedType] = useState("");
+  const [description, setDescription] = useState("");
+  const titleId = useId();
+  const audienceLabelId = useId();
+  const typeLabelId = useId();
+  const descriptionId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const resetForm = useCallback(() => {
+    setSelectedChildren([]);
+    setSelectedType("");
+    setDescription("");
+  }, []);
+
+  const handleClose = useCallback(() => {
+    resetForm();
+    onClose();
+  }, [onClose, resetForm]);
+
+  const handlePublish = useCallback(() => {
+    onPublish();
+    handleClose();
+  }, [onPublish, handleClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    panelRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") handleClose();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [isOpen, handleClose]);
 
   if (!isOpen) return null;
 
+  const isAllSelected = selectedChildren === "all";
+
   const toggleChild = (childId: string) => {
-    setIsAllSelected(false);
     setSelectedChildren((prev) =>
-      prev.includes(childId)
-        ? prev.filter((id) => id !== childId)
-        : [...prev, childId]
+      prev === "all"
+        ? [childId]
+        : prev.includes(childId)
+          ? prev.filter((id) => id !== childId)
+          : [...prev, childId]
     );
   };
 
   const toggleAll = () => {
-    setIsAllSelected((prev) => !prev);
-    setSelectedChildren([]);
+    setSelectedChildren((prev) => (prev === "all" ? [] : "all"));
   };
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center pt-10 px-6 overflow-y-auto"
       style={{ backgroundColor: "rgba(0,0,0,.4)" }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
         className="w-full my-10"
         style={{
           maxWidth: 580,
@@ -46,6 +90,7 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
           border: "1px solid #ECE0D0",
           borderRadius: 24,
           boxShadow: "0 20px 50px -24px rgba(63,54,46,.35)",
+          outline: "none",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -54,12 +99,14 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
           style={{ padding: "20px 26px", borderBottom: "1px solid #ECE0D0" }}
         >
           <button
-            onClick={onClose}
+            type="button"
+            onClick={handleClose}
             style={{ color: "#94887B", fontWeight: 700, fontSize: 15 }}
           >
             Cancelar
           </button>
           <span
+            id={titleId}
             style={{
               fontFamily: "'Fredoka', sans-serif",
               fontWeight: 600,
@@ -70,10 +117,8 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
             Nueva publicación
           </span>
           <button
-            onClick={() => {
-              onPublish();
-              onClose();
-            }}
+            type="button"
+            onClick={handlePublish}
             style={{ color: "#D9583C", fontWeight: 800, fontSize: 15 }}
           >
             Publicar
@@ -81,6 +126,7 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
         </div>
         <div style={{ padding: "24px 26px" }}>
           <div
+            id={audienceLabelId}
             style={{
               fontSize: 12,
               fontWeight: 800,
@@ -91,12 +137,19 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
           >
             PARA
           </div>
-          <div className="flex flex-wrap" style={{ gap: 9, marginBottom: 22 }}>
+          <div
+            role="group"
+            aria-labelledby={audienceLabelId}
+            className="flex flex-wrap"
+            style={{ gap: 9, marginBottom: 22 }}
+          >
             {children.map((child) => {
-              const isSelected = selectedChildren.includes(child.id);
+              const isSelected = selectedChildren !== "all" && selectedChildren.includes(child.id);
               return (
                 <button
                   key={child.id}
+                  type="button"
+                  aria-pressed={isSelected}
                   onClick={() => toggleChild(child.id)}
                   className="flex items-center"
                   style={{
@@ -131,6 +184,8 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
               );
             })}
             <button
+              type="button"
+              aria-pressed={isAllSelected}
               onClick={toggleAll}
               style={{
                 padding: "6px 16px",
@@ -147,6 +202,7 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
             </button>
           </div>
           <div
+            id={typeLabelId}
             style={{
               fontSize: 12,
               fontWeight: 800,
@@ -157,12 +213,19 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
           >
             TIPO
           </div>
-          <div className="flex flex-wrap" style={{ gap: 9, marginBottom: 22 }}>
+          <div
+            role="group"
+            aria-labelledby={typeLabelId}
+            className="flex flex-wrap"
+            style={{ gap: 9, marginBottom: 22 }}
+          >
             {postTypes.map((type) => {
               const isSelected = selectedType === type.id;
               return (
                 <button
                   key={type.id}
+                  type="button"
+                  aria-pressed={isSelected}
                   onClick={() => setSelectedType(isSelected ? "" : type.id)}
                   style={{
                     padding: "8px 16px",
@@ -180,7 +243,9 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
               );
             })}
           </div>
-          <div
+          <label
+            htmlFor={descriptionId}
+            className="block"
             style={{
               fontSize: 12,
               fontWeight: 800,
@@ -190,8 +255,9 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
             }}
           >
             DESCRIPCIÓN
-          </div>
+          </label>
           <textarea
+            id={descriptionId}
             placeholder="Contá cómo le fue hoy…"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -240,13 +306,16 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
                 strokeWidth="1.7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                aria-hidden="true"
               >
                 <rect x="3" y="3" width="18" height="18" rx="2" />
                 <circle cx="9" cy="9" r="2" />
                 <path d="m21 15-3.6-3.6a2 2 0 0 0-2.8 0L6 21" />
               </svg>
             </div>
-            <div
+            <button
+              type="button"
+              aria-label="Agregar foto"
               className="flex flex-col items-center justify-center"
               style={{
                 width: 96,
@@ -268,11 +337,12 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                aria-hidden="true"
               >
                 <path d="M12 5v14M5 12h14" />
               </svg>
               <span style={{ fontSize: 12 }}>Agregar</span>
-            </div>
+            </button>
           </div>
         </div>
       </div>

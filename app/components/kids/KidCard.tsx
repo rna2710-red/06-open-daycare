@@ -16,10 +16,18 @@ const chevronIcon = (
     strokeWidth="2.2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
   >
     <path d="m9 18 6-6-6-6" />
   </svg>
 );
+
+function formatParentsLabel(parentCount: number): string {
+  if (parentCount === 0) {
+    return "sin padres vinculados";
+  }
+  return `${parentCount} ${parentCount === 1 ? "padre vinculado" : "padres vinculados"}`;
+}
 
 export function KidCard({ child }: KidCardProps) {
   return (
@@ -28,6 +36,7 @@ export function KidCard({ child }: KidCardProps) {
       className="kid flex min-w-0 items-center gap-3.5 rounded-[18px] border border-borde bg-superficie p-4 shadow-[0_4px_14px_-12px_rgba(120,90,60,.5)]"
     >
       <span
+        aria-hidden="true"
         className="flex h-12 w-12 flex-none items-center justify-center rounded-full font-display text-lg font-semibold"
         style={{ background: child.avatarColor, color: child.avatarTextColor }}
       >
@@ -38,10 +47,7 @@ export function KidCard({ child }: KidCardProps) {
           {child.name}
         </div>
         <div className="text-[13px] text-tinta-mute">
-          {child.age} ·{" "}
-          {child.parents.length === 0
-            ? "sin padres vinculados"
-            : `${child.parents.length} ${child.parents.length === 1 ? "padre vinculado" : "padres vinculados"}`}
+          {child.age} · {formatParentsLabel(child.parents.length)}
         </div>
       </div>
       {child.allergyBadge ? (
