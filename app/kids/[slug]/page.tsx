@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { Sidebar } from "@/app/components/shared/Sidebar";
+import LinkParentTrigger from "@/app/components/kids/LinkParentTrigger";
+import { adminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 
 const backIcon = (
@@ -47,22 +49,7 @@ const sunIcon = (
     strokeLinejoin="round"
   >
     <circle cx="12" cy="12" r="4" />
-    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-  </svg>
-);
-
-const plusIcon = (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#B0A290"
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 5v14M5 12h14" />
+    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4-1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
   </svg>
 );
 
@@ -120,6 +107,13 @@ function formatMonthYear(value: string): string {
   });
 }
 
+type ParentRow = {
+  key: string;
+  name: string;
+  relationship: string;
+  status: "active" | "pending";
+};
+
 type DbChild = {
   id: string;
   full_name: string;
@@ -136,6 +130,12 @@ type DbInvitation = {
   relationship: string;
   status: string;
   created_at: string;
+};
+
+type DbParentLink = {
+  id: string;
+  relationship: string;
+  users: { full_name: string } | { full_name: string }[] | null;
 };
 
 export default async function ChildProfilePage({
@@ -167,6 +167,31 @@ export default async function ChildProfilePage({
     .order("created_at", { ascending: false });
 
   const pendingInvitations = (invitations ?? []) as DbInvitation[];
+
+  const { data: parentLinks } = await adminClient
+    .from("parent_children")
+    .select("id, relationship, users(full_name)")
+    .eq("child_id", slug)
+    .order("created_at", { ascending: false });
+
+  const linkedParents = ((parentLinks ?? []) as DbParentLink[]).map((link) => {
+    const user = Array.isArray(link.users) ? link.users[0] : link.users;
+    return {
+      key: `link-${link.id}`,
+      name: user?.full_name || "Padre vinculado",
+      relationship: link.relationship,
+      status: "active" as const,
+    };
+  });
+
+  const pendingRows: ParentRow[] = pendingInvitations.map((invitation) => ({
+    key: `invitation-${invitation.id}`,
+    name: invitation.full_name,
+    relationship: invitation.relationship,
+    status: "pending" as const,
+  }));
+
+  const parentRows: ParentRow[] = [...linkedParents, ...pendingRows];
 
   const avatar = getAvatarColor(child.full_name);
   const age = computeAge(child.birth_date);
@@ -273,23 +298,20 @@ export default async function ChildProfilePage({
                   PADRES VINCULADOS
                 </div>
                 <div className="flex flex-col gap-[14px]">
-                  {pendingInvitations.length === 0 && (
+                  {parentRows.length === 0 && (
                     <p className="text-[13.5px] text-tinta-mute">
                       Todavía no hay padres vinculados.
                     </p>
                   )}
 
-                  {pendingInvitations.map((invitation) => {
-                    const parentAvatar = getAvatarColor(invitation.full_name);
+                  {parentRows.map((parent) => {
+                    const parentAvatar = getAvatarColor(parent.name);
                     const relationshipLabel =
-                      RELATIONSHIP_LABELS[invitation.relationship] ??
-                      invitation.relationship;
+                      RELATIONSHIP_LABELS[parent.relationship] ??
+                      parent.relationship;
 
                     return (
-                      <div
-                        key={invitation.id}
-                        className="flex items-center gap-3"
-                      >
+                      <div key={parent.key} className="flex items-center gap-3">
                         <span
                           className="flex h-10 w-10 flex-none items-center justify-center rounded-full font-display text-base font-semibold"
                           style={{
@@ -297,34 +319,36 @@ export default async function ChildProfilePage({
                             color: parentAvatar.text,
                           }}
                         >
-                          {invitation.full_name.charAt(0).toUpperCase()}
+                          {parent.name.charAt(0).toUpperCase()}
                         </span>
                         <div className="min-w-0 flex-1">
                           <div className="text-[14.5px] font-extrabold text-tinta">
-                            {invitation.full_name}
+                            {parent.name}
                           </div>
                           <div className="text-[12.5px] text-tinta-mute">
-                            {relationshipLabel} · invitación enviada
+                            {relationshipLabel} ·{" "}
+                            {parent.status === "active"
+                              ? "activa"
+                              : "invitación enviada"}
                           </div>
                         </div>
-                        <span className="flex-none rounded-full bg-[#F7E7A6] px-[9px] py-1 text-[10.5px] font-extrabold text-[#9A7B1E]">
-                          PENDIENTE
-                        </span>
+                        {parent.status === "active" ? (
+                          <span className="flex-none rounded-full bg-[#CFEBD8] px-[9px] py-1 text-[10.5px] font-extrabold text-[#3E9B6C]">
+                            ACTIVA
+                          </span>
+                        ) : (
+                          <span className="flex-none rounded-full bg-[#F7E7A6] px-[9px] py-1 text-[10.5px] font-extrabold text-[#9A7B1E]">
+                            PENDIENTE
+                          </span>
+                        )}
                       </div>
                     );
                   })}
 
-                  <Link
-                    href={`/kids/${slug}/vincular-padre`}
-                    className="flex items-center gap-3 pt-2"
-                  >
-                    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-[#D8CBBA] text-[#B0A290]">
-                      {plusIcon}
-                    </span>
-                    <span className="text-[14.5px] font-extrabold text-acento-oscuro">
-                      Vincular otro padre
-                    </span>
-                  </Link>
+                  <LinkParentTrigger
+                    childId={slug}
+                    childName={child.full_name}
+                  />
                 </div>
               </div>
             </div>

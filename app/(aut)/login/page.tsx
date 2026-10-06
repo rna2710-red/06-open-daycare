@@ -40,8 +40,8 @@ export default function LoginPage() {
         return;
       }
 
-      console.log("[Login] Navigating to /kids...");
-      router.push("/kids");
+      console.log("[Login] Navigating to / ...");
+      router.push("/");
     } catch (err) {
       console.error("[Login] Unexpected error:", err);
       setLoading(false);

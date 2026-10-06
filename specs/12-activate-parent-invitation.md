@@ -13,7 +13,8 @@ El SPEC 11 crea la invitación y envía el correo con el código, pero `/activat
 
 **In:**
 
-- Migración de tabla `parent_children` con campos del esquema de referencia: `id`, `parent_id`, `child_id`, `relationship`, `created_at`, UNIQUE (`parent_id`, `child_id`).
+- Migración de tabla `parent_children` con c
+ampos del esquema de referencia: `id`, `parent_id`, `child_id`, `relationship`, `created_at`, UNIQUE (`parent_id`, `child_id`).
 - RLS en `parent_children`: staff puede leer vínculos de niños de su daycare; `service_role` tiene acceso total.
 - Variable de entorno `SUPABASE_SERVICE_ROLE_KEY` (documentar en `.env.template`; el usuario la configura).
 - Helper `utils/supabase/admin.ts`: cliente `supabase-js` con service role para operaciones privilegiadas (sin cookies de SSR).
