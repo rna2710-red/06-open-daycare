@@ -64,6 +64,8 @@ El login no redirigía al home aunque las credenciales fueran correctas. Causa r
 
 ## Command
 - /verify-spec Usaremos el agente `spec-verifier` para validar y corregir los criterios de aceptación de un spec. Revisa lint, build, Next.js best practices vía Context7, compara screenshots con mockups vía Playwright, y corrige tanto el spec como el código cuando hay desviaciones.
+- /db-migrator Usaremos el agente `db-migrator` para asegurar que existan las migraciones de Supabase en `supabase/migrations/` y aplicarlas al proyecto remoto vía MCP. Deriva el SQL de specs de DB y del esquema de referencia. Uso: `/db-migrator` (auditoría completa) o `/db-migrator <spec>`.
+- /a11y Usaremos el agente `accessibility-checker` para auditar y corregir accesibilidad WCAG 2.2 AA en archivos React/TSX o HTML/CSS. Incluye verificación de contraste del design system (`app/globals.css`) y checks de runtime con Playwright. Uso: `/a11y <archivo>`.
 
 ## Supabase Skills
 
@@ -83,7 +85,12 @@ El login no redirigía al home aunque las credenciales fueran correctas. Causa r
 
 ## Agents
 
-- `spec-verifier` — Valida y corrige los criterios de aceptación de un spec. Ejecuta lint, build, verifica Next.js best practices vía Context7, compara screenshots con mockups usando Playwright, y corrige tanto el spec como el código cuando hay desviaciones. Guarda screenshots en `.playwright-mcp/`.
+Agentes definidos en `.opencode/agents/`:
+
+- `spec-verifier` — Valida y corrige los criterios de aceptación de un spec. Revisa lint, build, verifica Next.js best practices vía Context7, compara screenshots con mockups vía Playwright, y corrige tanto el spec como el código cuando hay desviaciones. Invocable con `/verify-spec`.
+- `react-best-practices` — Aplica mejores prácticas de React a archivos indicados, verificando contra la documentación actualizada vía Context7. Revisa hooks, estado, effects, estructura de componentes y TypeScript strict. Verifica con `npm run lint` + `npm run build`.
+- `db-migrator` — Asegura que existan las migraciones de Supabase en `supabase/migrations/` y las aplica al proyecto remoto. Deriva el SQL de specs de DB y del esquema de referencia. Auto-aplica pendientes; reporta drift sin editar migraciones ya aplicadas. Invocable con `/db-migrator`.
+- `accessibility-checker` — Audita y corrige accesibilidad WCAG 2.2 AA en archivos React/TSX o HTML/CSS. Incluye verificación de contraste del design system (`app/globals.css`) y checks de runtime con Playwright. Reporte en español. Invocable con `/a11y <archivo>`.
 
 ## Language
 

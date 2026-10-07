@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface PokemonType {
   type: { name: string };
@@ -87,48 +88,66 @@ function formatName(name: string): string {
     .join(" ");
 }
 
-export default function PokemonViewer() {
-  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
+}
 
-  const loadPokemon = useCallback(async (id: number) => {
-    try {
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${id}`
-      );
-      if (!response.ok) {
-        throw new Error("No se pudo cargar el Pokémon");
-      }
-      const data: Pokemon = await response.json();
-      setPokemon(data);
-      setError(null);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Error desconocido"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+export default function PokemonViewer() {
+  const [pokemonId, setPokemonId] = useState(MIN_ID);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loadedId, setLoadedId] = useState<number | null>(null);
+
+  const isLoading = loadedId !== pokemonId;
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadPokemon(MIN_ID);
-  }, [loadPokemon]);
+    let ignore = false;
+    const controller = new AbortController();
+
+    async function loadPokemon() {
+      try {
+        const response = await fetch(
+          `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
+          { signal: controller.signal },
+        );
+        if (!response.ok) {
+          throw new Error("No se pudo cargar el Pokémon");
+        }
+        const data: Pokemon = await response.json();
+        if (ignore) return;
+        setPokemon(data);
+        setError(null);
+        setLoadedId(pokemonId);
+      } catch (err) {
+        if (ignore || isAbortError(err)) return;
+        setError(err instanceof Error ? err.message : "Error desconocido");
+        setLoadedId(pokemonId);
+      }
+    }
+
+    void loadPokemon();
+
+    return () => {
+      ignore = true;
+      controller.abort();
+    };
+  }, [pokemonId, reloadKey]);
 
   const handlePrevious = () => {
-    if (!pokemon || isLoading) return;
-    setIsLoading(true);
-    const nextId = pokemon.id <= MIN_ID ? MAX_ID : pokemon.id - 1;
-    loadPokemon(nextId);
+    if (isLoading) return;
+    setPokemonId((id) => (id <= MIN_ID ? MAX_ID : id - 1));
   };
 
   const handleNext = () => {
-    if (!pokemon || isLoading) return;
-    setIsLoading(true);
-    const nextId = pokemon.id >= MAX_ID ? MIN_ID : pokemon.id + 1;
-    loadPokemon(nextId);
+    if (isLoading) return;
+    setPokemonId((id) => (id >= MAX_ID ? MIN_ID : id + 1));
+  };
+
+  const handleRetry = () => {
+    setError(null);
+    setLoadedId(null);
+    setReloadKey((key) => key + 1);
   };
 
   const artwork =
@@ -148,7 +167,10 @@ export default function PokemonViewer() {
         >
           ←
         </button>
-        <span className="text-sm font-extrabold tracking-[.5px] text-tinta-mute">
+        <span
+          className="text-sm font-extrabold tracking-[.5px] text-tinta-mute"
+          aria-live="polite"
+        >
           {pokemon ? `#${String(pokemon.id).padStart(3, "0")}` : "—"}
         </span>
         <button
@@ -163,7 +185,11 @@ export default function PokemonViewer() {
       </div>
 
       {isLoading && (
-        <div className="flex h-[220px] items-center justify-center">
+        <div
+          className="flex h-[220px] items-center justify-center"
+          role="status"
+          aria-live="polite"
+        >
           <p className="text-sm font-bold text-tinta-suave">
             Cargando...
           </p>
@@ -171,14 +197,14 @@ export default function PokemonViewer() {
       )}
 
       {!isLoading && error && (
-        <div className="flex h-[220px] flex-col items-center justify-center gap-2">
+        <div
+          className="flex h-[220px] flex-col items-center justify-center gap-2"
+          role="alert"
+        >
           <p className="text-sm font-bold text-coral-medio">{error}</p>
           <button
             type="button"
-            onClick={() => {
-              setIsLoading(true);
-              loadPokemon(MIN_ID);
-            }}
+            onClick={handleRetry}
             className="text-sm font-extrabold text-acento-oscuro underline"
           >
             Reintentar
@@ -190,10 +216,12 @@ export default function PokemonViewer() {
         <div className="flex flex-col items-center">
           <div className="mb-4 flex h-[200px] w-full items-center justify-center rounded-2xl bg-[#F4ECE1]">
             {artwork ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={artwork}
                 alt={formatName(pokemon.name)}
+                width={180}
+                height={180}
+                unoptimized
                 className="h-[180px] w-[180px] object-contain"
               />
             ) : (

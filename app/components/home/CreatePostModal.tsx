@@ -179,7 +179,7 @@ export default function CreatePostModal({ isOpen, onClose, onPublish }: CreatePo
                   >
                     {child.initial}
                   </span>
-                  {child.name}
+                  <span className="truncate">{child.name.split(" ")[0]}</span>
                 </button>
               );
             })}
