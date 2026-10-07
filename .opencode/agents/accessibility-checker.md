@@ -1,6 +1,6 @@
 ---
 description: Audits React/TSX and pure HTML/CSS for WCAG 2.2 AA accessibility, including design-system color contrast verification against WCAG ratios. Reviews a user-indicated file, fixes issues with Playwright runtime checks, and reports findings in Spanish. Use when checking accessibility of a component, page, or mockup, or to fix a11y violations.
-mode: all
+mode: subagent
 model: opencode-go/mimo-v2.5
 color: warning
 steps: 80
