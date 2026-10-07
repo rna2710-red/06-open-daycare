@@ -65,7 +65,7 @@ El login no redirigía al home aunque las credenciales fueran correctas. Causa r
 ## Command
 - /verify-spec Usaremos el agente `spec-verifier` para validar y corregir los criterios de aceptación de un spec. Revisa lint, build, Next.js best practices vía Context7, compara screenshots con mockups vía Playwright, y corrige tanto el spec como el código cuando hay desviaciones.
 - /db-migrator Usaremos el agente `db-migrator` para asegurar que existan las migraciones de Supabase en `supabase/migrations/` y aplicarlas al proyecto remoto vía MCP. Deriva el SQL de specs de DB y del esquema de referencia. Uso: `/db-migrator` (auditoría completa) o `/db-migrator <spec>`.
-- /db-security-auditor Usaremos el agente `db-security-auditor` para auditar seguridad de BD y app (RLS, roles, GRANTs, SECURITY DEFINER, service_role, fugas padre↔niño/staff). Crea fix migrations en `supabase/migrations/` sin auto-aplicarlas. Uso: `/db-security-auditor` o `/db-security-auditor <tabla|spec|archivo>`.
+- /db-security-auditor Usaremos el agente `db-security-auditor` para auditar seguridad de BD y app (RLS, roles, GRANTs, SECURITY DEFINER, service_role, fugas padre↔niño/staff). Solo reporta hallazgos; no crea migraciones ni corrige código. Uso: `/db-security-auditor` o `/db-security-auditor <tabla|spec|archivo>`.
 - /a11y Usaremos el agente `accessibility-checker` para auditar y corregir accesibilidad WCAG 2.2 AA en archivos React/TSX o HTML/CSS. Incluye verificación de contraste del design system (`app/globals.css`) y checks de runtime con Playwright. Uso: `/a11y <archivo>`.
 
 ## Supabase Skills
@@ -103,14 +103,14 @@ Agente de seguridad de la base de datos y del código que la usa. Su meta es **p
 
 **Flujo típico:**
 1. Invocar `/db-security-auditor` (o con alcance).
-2. El agente reporta hallazgos (Crítico/Alto/Medio/Bajo) y crea **fix migrations** nuevas en `supabase/migrations/` — **no las aplica**.
-3. Revisar los archivos fix.
-4. Aplicarlos con `/db-migrator`.
-5. Si tocó código de app, ya viene con lint+build del propio agente.
+2. El agente reporta hallazgos (Crítico/Alto/Medio/Bajo) con evidencia y recomendaciones — **no crea archivos ni corrige código**.
+3. Revisar el reporte.
+4. Crear fix migrations (con `/db-migrator` o manualmente) y aplicarlas con `/db-migrator`.
+5. Aplicar fixes de app recomendados manualmente.
 
 **Reglas del agente:**
-- **Hace:** audita BD remota + migraciones + `utils/supabase/**` y `app/actions/**`; crea fix migrations; corrige issues claros de app.
-- **No hace:** auto-aplicar migraciones, editar migraciones ya aplicadas, inventar modelo de autorización sin spec/práctica clara.
+- **Hace:** audita BD remota + migraciones + `utils/supabase/**` y `app/actions/**`; reporta hallazgos con severidad y recomendaciones.
+- **No hace:** crear fix migrations, editar código, auto-aplicar migraciones, editar migraciones ya aplicadas, inventar modelo de autorización sin spec/práctica clara.
 - **Correrlo:** después de specs de BD, al tocar RLS/GRANTs/SECURITY DEFINER/service_role, o antes de merges que toquen datos de niños/padres.
 
 Este resumen es para quien escriba RLS, migraciones o server actions sin invocar el agente.
@@ -153,7 +153,7 @@ Agentes definidos en `.opencode/agents/`:
 - `spec-verifier` — Valida y corrige los criterios de aceptación de un spec. Revisa lint, build, verifica Next.js best practices vía Context7, compara screenshots con mockups vía Playwright, y corrige tanto el spec como el código cuando hay desviaciones. Invocable con `/verify-spec`.
 - `react-best-practices` — Aplica mejores prácticas de React a archivos indicados, verificando contra la documentación actualizada vía Context7. Revisa hooks, estado, effects, estructura de componentes y TypeScript strict. Verifica con `npm run lint` + `npm run build`.
 - `db-migrator` — Asegura que existan las migraciones de Supabase en `supabase/migrations/` y las aplica al proyecto remoto. Deriva el SQL de specs de DB y del esquema de referencia. Auto-aplica pendientes; reporta drift sin editar migraciones ya aplicadas. Invocable con `/db-migrator`.
-- `db-security-auditor` — Audita seguridad Supabase y app para prevenir fugas entre niños, padres y staff (RLS, roles, GRANTs, SECURITY DEFINER, service_role, aislamiento daycare y padre↔niño). Crea fix migrations en `supabase/migrations/` sin auto-aplicarlas; aplica fixes de app claros con lint+build. Reporte en español. Invocable con `/db-security-auditor`.
+- `db-security-auditor` — Audita seguridad Supabase y app para prevenir fugas entre niños, padres y staff (RLS, roles, GRANTs, SECURITY DEFINER, service_role, aislamiento daycare y padre↔niño). Solo reporta hallazgos y recomendaciones; no crea fix migrations ni corrige código. Reporte en español. Invocable con `/db-security-auditor`.
 - `accessibility-checker` — Audita y corrige accesibilidad WCAG 2.2 AA en archivos React/TSX o HTML/CSS. Incluye verificación de contraste del design system (`app/globals.css`) y checks de runtime con Playwright. Reporte en español. Invocable con `/a11y <archivo>`.
 
 ## Language
