@@ -64,6 +64,9 @@ El login no redirigía al home aunque las credenciales fueran correctas. Causa r
 
 ## Command
 - /verify-spec Usaremos el agente `spec-verifier` para validar y corregir los criterios de aceptación de un spec. Revisa lint, build, Next.js best practices vía Context7, compara screenshots con mockups vía Playwright, y corrige tanto el spec como el código cuando hay desviaciones.
+- /db-migrator Usaremos el agente `db-migrator` para asegurar que existan las migraciones de Supabase en `supabase/migrations/` y aplicarlas al proyecto remoto vía MCP. Deriva el SQL de specs de DB y del esquema de referencia. Uso: `/db-migrator` (auditoría completa) o `/db-migrator <spec>`.
+- /db-security-auditor Usaremos el agente `db-security-auditor` para auditar seguridad de BD y app (RLS, roles, GRANTs, SECURITY DEFINER, service_role, fugas padre↔niño/staff). Solo reporta hallazgos; no crea migraciones ni corrige código. Uso: `/db-security-auditor` o `/db-security-auditor <tabla|spec|archivo>`.
+- /a11y Usaremos el agente `accessibility-checker` para auditar y corregir accesibilidad WCAG 2.2 AA en archivos React/TSX o HTML/CSS. Incluye verificación de contraste del design system (`app/globals.css`) y checks de runtime con Playwright. Uso: `/a11y <archivo>`.
 
 ## Supabase Skills
 
@@ -80,10 +83,78 @@ El login no redirigía al home aunque las credenciales fueran correctas. Causa r
 - El archivo de migración es la **fuente de verdad** del esquema. Si hay diff entre el archivo y la BD, el archivo gana.
 - Las migraciones son **inmutables** una vez aplicadas. Para corregir, crear una nueva migración.
 - El spec debe incluir el SQL completo de la migración en la sección "Modelo de datos".
+- `service_role` bypassa RLS por defecto; policies explícitas a `service_role` solo documentan intención.
+- Tras crear tablas/policies/functions: correr `/db-security-auditor` (o al menos `supabase_get_advisors` security).
+
+## Supabase DB Security — Modelo de aislamiento y auditoría
+
+### Qué es `db-security-auditor`
+
+Agente de seguridad de la base de datos y del código que la usa. Su meta es **prevenir fugas de datos entre niños, padres y staff** (RLS mal configurado, roles, GRANTs, SECURITY DEFINER, `service_role`, aislamiento daycare y padre↔niño). Fuente de verdad del diseño: `.opencode/agents/db-security-auditor.md`.
+
+### Cómo usarlo
+
+| Invocación | Cuándo |
+|------------|--------|
+| `/db-security-auditor` | Auditoría completa (BD + app) |
+| `/db-security-auditor children` | Enfocarse en una tabla |
+| `/db-security-auditor 12-activate-parent-invitation` | Enfocarse en un spec de DB |
+| `/db-security-auditor app/actions/invitations.ts` | Enfocarse en un archivo de la app |
+
+**Flujo típico:**
+1. Invocar `/db-security-auditor` (o con alcance).
+2. El agente reporta hallazgos (Crítico/Alto/Medio/Bajo) con evidencia y recomendaciones — **no crea archivos ni corrige código**.
+3. Revisar el reporte.
+4. Crear fix migrations (con `/db-migrator` o manualmente) y aplicarlas con `/db-migrator`.
+5. Aplicar fixes de app recomendados manualmente.
+
+**Reglas del agente:**
+- **Hace:** audita BD remota + migraciones + `utils/supabase/**` y `app/actions/**`; reporta hallazgos con severidad y recomendaciones.
+- **No hace:** crear fix migrations, editar código, auto-aplicar migraciones, editar migraciones ya aplicadas, inventar modelo de autorización sin spec/práctica clara.
+- **Correrlo:** después de specs de BD, al tocar RLS/GRANTs/SECURITY DEFINER/service_role, o antes de merges que toquen datos de niños/padres.
+
+Este resumen es para quien escriba RLS, migraciones o server actions sin invocar el agente.
+
+### Roles de dominio
+
+- `users.role`: `staff` | `parent` | `admin`.
+- Multi-tenant: `users.daycare_id` → `daycares`.
+- Vínculo padre↔niño: tabla `parent_children` (`parent_id`, `child_id`).
+- Datos sensibles que **nunca** deben cruzar tenants/familias: `children.medical_notes`, `children.allergy_tags`, `children.photo_consent`, `invitations.code`, `invitations.email`, perfiles de otras familias, rosters de otras guarderías.
+
+### Matriz de aislamiento (RLS esperada)
+
+| Tabla | Staff (su daycare) | Padre (hijos vinculados) | Otro padre | Staff otra daycare | `anon` |
+|-------|--------------------|--------------------------|------------|--------------------|--------|
+| `children` | SELECT/INSERT propio daycare | SELECT solo vinculados* | — | — | — |
+| `parent_children` | SELECT propio daycare | SELECT solo `parent_id = auth.uid()` | — | — | — |
+| `invitations` | SELECT/INSERT propio daycare | — | — | — | — |
+| `users` | SELECT propio daycare* | SELECT propia fila | — | — | — |
+| `daycares` | SELECT propia | SELECT propia* | — | — | — |
+| `rooms` | SELECT propio daycare | — | — | — | — |
+
+\* Decisiones de producto aún abiertas en algunos specs (lectura de `children`/`daycares` por el padre vía RLS vs solo server action con `service_role`). Si un spec aprobado define el modelo, se exige; si no, se reporta — no se inventa la policy.
+
+### Checklist al escribir policies / GRANTs / SECURITY DEFINER
+
+1. RLS habilitado en toda tabla `public` expuesta al Data API.
+2. Policies de `authenticated` **siempre** con predicado de aislamiento (`daycare_id`, `parent_id`, `auth.uid()`); jamás `USING (true)` sin ownership.
+3. No usar `auth.role()` (deprecado); usar `TO authenticated` + predicate.
+4. `UPDATE` requiere `USING` **y** `WITH CHECK`; y policy de `SELECT` asociada.
+5. `SECURITY DEFINER`: solo si es necesario; `SET search_path`; `REVOKE EXECUTE` de `public`/`anon`/`authenticated` salvo RPC documentado.
+6. `GRANT` least-privilege; **no** `SELECT` de `anon` sobre `users`, `children`, `invitations`, `parent_children`, `daycares`.
+7. No derivar autorización (rol/daycare) de `raw_user_meta_data` / `user_metadata` del cliente en la lógica de acceso.
+8. Server actions privilegiadas: re-validar sesión, rol, `daycare_id` y vínculo `parent_children` antes de escribir.
 
 ## Agents
 
-- `spec-verifier` — Valida y corrige los criterios de aceptación de un spec. Ejecuta lint, build, verifica Next.js best practices vía Context7, compara screenshots con mockups usando Playwright, y corrige tanto el spec como el código cuando hay desviaciones. Guarda screenshots en `.playwright-mcp/`.
+Agentes definidos en `.opencode/agents/`:
+
+- `spec-verifier` — Valida y corrige los criterios de aceptación de un spec. Revisa lint, build, verifica Next.js best practices vía Context7, compara screenshots con mockups vía Playwright, y corrige tanto el spec como el código cuando hay desviaciones. Invocable con `/verify-spec`.
+- `react-best-practices` — Aplica mejores prácticas de React a archivos indicados, verificando contra la documentación actualizada vía Context7. Revisa hooks, estado, effects, estructura de componentes y TypeScript strict. Verifica con `npm run lint` + `npm run build`.
+- `db-migrator` — Asegura que existan las migraciones de Supabase en `supabase/migrations/` y las aplica al proyecto remoto. Deriva el SQL de specs de DB y del esquema de referencia. Auto-aplica pendientes; reporta drift sin editar migraciones ya aplicadas. Invocable con `/db-migrator`.
+- `db-security-auditor` — Audita seguridad Supabase y app para prevenir fugas entre niños, padres y staff (RLS, roles, GRANTs, SECURITY DEFINER, service_role, aislamiento daycare y padre↔niño). Solo reporta hallazgos y recomendaciones; no crea fix migrations ni corrige código. Reporte en español. Invocable con `/db-security-auditor`.
+- `accessibility-checker` — Audita y corrige accesibilidad WCAG 2.2 AA en archivos React/TSX o HTML/CSS. Incluye verificación de contraste del design system (`app/globals.css`) y checks de runtime con Playwright. Reporte en español. Invocable con `/a11y <archivo>`.
 
 ## Language
 

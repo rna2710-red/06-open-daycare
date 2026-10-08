@@ -166,8 +166,13 @@ export function Sidebar({ itemActivo }: SidebarProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isToastVisible, setIsToastVisible] = useState(false);
 
+  const openModal = useCallback(() => setIsModalOpen(true), []);
+  const closeModal = useCallback(() => setIsModalOpen(false), []);
   const handlePublish = useCallback(() => {
     setIsToastVisible(true);
+  }, []);
+  const handleToastClose = useCallback(() => {
+    setIsToastVisible(false);
   }, []);
 
   return (
@@ -201,24 +206,24 @@ export function Sidebar({ itemActivo }: SidebarProps) {
             className="absolute inset-0 bg-tinta/45"
           />
           <aside className="absolute inset-y-0 left-0 flex w-[248px] flex-col border-r border-borde bg-superficie px-4 py-6">
-            <SidebarContent itemActivo={itemActivo} onNewPost={() => setIsModalOpen(true)} />
+            <SidebarContent itemActivo={itemActivo} onNewPost={openModal} />
           </aside>
         </div>
       )}
 
       <aside className="sticky top-0 hidden h-dvh w-[248px] flex-none flex-col border-r border-borde bg-superficie px-4 py-6 md:flex">
-        <SidebarContent itemActivo={itemActivo} onNewPost={() => setIsModalOpen(true)} />
+        <SidebarContent itemActivo={itemActivo} onNewPost={openModal} />
       </aside>
 
       <CreatePostModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         onPublish={handlePublish}
       />
       <Toast
         message="Publicación enviada"
         isVisible={isToastVisible}
-        onClose={() => setIsToastVisible(false)}
+        onClose={handleToastClose}
       />
     </>
   );

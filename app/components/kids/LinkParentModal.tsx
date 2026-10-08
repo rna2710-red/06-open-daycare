@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { createInvitation } from "@/app/actions/invitations";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
+import {
+  createInvitation,
+  type RelationshipType,
+} from "@/app/actions/invitations";
 
 interface LinkParentModalProps {
   isOpen: boolean;
@@ -83,6 +87,8 @@ const inputStyle = {
   color: "#3F362E",
 };
 
+const titleId = "link-parent-modal-title";
+
 export default function LinkParentModal({
   isOpen,
   onClose,
@@ -92,14 +98,15 @@ export default function LinkParentModal({
 }: LinkParentModalProps) {
   const [parentName, setParentName] = useState("");
   const [email, setEmail] = useState("");
-  const [selectedRole, setSelectedRole] = useState<string>("mother");
+  const [selectedRole, setSelectedRole] = useState<RelationshipType>("mother");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [createdCode, setCreatedCode] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
-  const [created, setCreated] = useState(false);
 
-  const resetForm = () => {
+  const isCreated = createdCode !== null;
+
+  const resetForm = useCallback(() => {
     setParentName("");
     setEmail("");
     setSelectedRole("mother");
@@ -107,23 +114,33 @@ export default function LinkParentModal({
     setSubmitError(null);
     setCreatedCode(null);
     setEmailSent(false);
-    setCreated(false);
-  };
+  }, []);
+
+  const close = useCallback(() => {
+    resetForm();
+    onClose();
+  }, [resetForm, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        close();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, close]);
 
   if (!isOpen) return null;
 
   const childFirstName = childName.trim().split(/\s+/)[0] || childName;
 
-  const handleClose = () => {
-    if (created) {
-      onCreated();
-    }
-    resetForm();
-    onClose();
-  };
-
-  const handleSubmit = async () => {
-    if (isSubmitting) return;
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSubmitting || isCreated) return;
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -133,7 +150,7 @@ export default function LinkParentModal({
         childId,
         fullName: parentName,
         email,
-        relationship: selectedRole as "mother" | "father" | "guardian",
+        relationship: selectedRole,
       });
 
       if (!result.success) {
@@ -141,17 +158,18 @@ export default function LinkParentModal({
         return;
       }
 
-      setCreated(true);
       setCreatedCode(result.code);
       setEmailSent(result.emailSent);
       onCreated();
 
       if (result.emailSent || !result.error) {
-        onClose();
+        close();
         return;
       }
 
-      setSubmitError(result.error);
+      if (result.error) {
+        setSubmitError(result.error);
+      }
     } catch {
       setSubmitError("Ocurrió un error inesperado. Probá de nuevo.");
     } finally {
@@ -159,11 +177,14 @@ export default function LinkParentModal({
     }
   };
 
-  return (
+  return createPortal(
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
       className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-6 pt-10"
       style={{ backgroundColor: "rgba(0,0,0,.4)" }}
-      onClick={handleClose}
+      onClick={close}
     >
       <div
         className="w-full max-w-[480px] overflow-hidden"
@@ -184,6 +205,7 @@ export default function LinkParentModal({
         >
           <div>
             <div
+              id={titleId}
               style={{
                 fontFamily: "'Fredoka', sans-serif",
                 fontWeight: 600,
@@ -196,7 +218,8 @@ export default function LinkParentModal({
             <div style={{ fontSize: 13, color: "#A89A8B" }}>a {childName}</div>
           </div>
           <button
-            onClick={handleClose}
+            type="button"
+            onClick={close}
             aria-label="Cerrar"
             className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-[#F0E6D8] text-[#94887B]"
           >
@@ -204,9 +227,10 @@ export default function LinkParentModal({
           </button>
         </div>
 
-        <div style={{ padding: "22px 26px" }}>
+        <form onSubmit={handleSubmit} style={{ padding: "22px 26px" }}>
           {submitError && (
             <div
+              role="alert"
               style={{
                 color: "#D9583C",
                 fontSize: "13px",
@@ -221,9 +245,7 @@ export default function LinkParentModal({
             </div>
           )}
 
-          <div
-            className="mb-[18px] flex gap-[11px] rounded-[14px] bg-[#E3ECFB] p-[13px_16px]"
-          >
+          <div className="mb-[18px] flex gap-[11px] rounded-[14px] bg-[#E3ECFB] p-[13px_16px]">
             {infoIcon}
             <span className="text-[13.5px] leading-[1.45] text-[#3F5694]">
               Le enviaremos un correo con un código para que active su cuenta.
@@ -231,8 +253,12 @@ export default function LinkParentModal({
             </span>
           </div>
 
-          <div style={labelStyle}>NOMBRE DEL PADRE/MADRE</div>
+          <label htmlFor="link-parent-name" style={labelStyle}>
+            NOMBRE DEL PADRE/MADRE
+          </label>
           <input
+            id="link-parent-name"
+            name="parentName"
             type="text"
             placeholder="Ej. Diego Fernández"
             value={parentName}
@@ -240,8 +266,12 @@ export default function LinkParentModal({
             style={{ ...inputStyle, marginBottom: 18 }}
           />
 
-          <div style={labelStyle}>EMAIL</div>
+          <label htmlFor="link-parent-email" style={labelStyle}>
+            EMAIL
+          </label>
           <input
+            id="link-parent-email"
+            name="email"
             type="email"
             placeholder="correo@ejemplo.com"
             value={email}
@@ -249,14 +279,22 @@ export default function LinkParentModal({
             style={{ ...inputStyle, marginBottom: 18 }}
           />
 
-          <div style={{ ...labelStyle, marginBottom: 10 }}>PARENTESCO</div>
-          <div className="mb-5 flex gap-[9px]">
+          <div id="link-parent-relationship-label" style={{ ...labelStyle, marginBottom: 10 }}>
+            PARENTESCO
+          </div>
+          <div
+            role="radiogroup"
+            aria-labelledby="link-parent-relationship-label"
+            className="mb-5 flex gap-[9px]"
+          >
             {roles.map((role) => {
               const isSelected = selectedRole === role.id;
               return (
                 <button
                   key={role.id}
                   type="button"
+                  role="radio"
+                  aria-checked={isSelected}
                   onClick={() => setSelectedRole(role.id)}
                   className="flex-1 rounded-full border-[1.5px] px-3 py-[11px] text-[14px] font-extrabold"
                   style={{
@@ -276,10 +314,7 @@ export default function LinkParentModal({
               <div className="mb-2 text-[12px] font-extrabold tracking-[.7px] text-[#A88526]">
                 CÓDIGO DE INVITACIÓN
               </div>
-              <div
-                suppressHydrationWarning
-                className="font-display text-[34px] font-semibold tracking-[7px] text-[#8A7234]"
-              >
+              <div className="font-display text-[34px] font-semibold tracking-[7px] text-[#8A7234]">
                 {createdCode}
               </div>
               <div className="mt-1.5 text-[13px] text-[#A88526]">
@@ -291,20 +326,20 @@ export default function LinkParentModal({
           )}
 
           <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting || created}
+            type="submit"
+            disabled={isSubmitting || isCreated}
             className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-gradient-to-b from-[#F4977E] to-[#EE8164] px-4 py-[14px] text-[15.5px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,.7)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {sendIcon}
             {isSubmitting
               ? "Enviando…"
-              : created
+              : isCreated
                 ? "Invitación creada"
                 : "Enviar invitación"}
           </button>
-        </div>
+        </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
