@@ -1,6 +1,6 @@
 # SPEC 13 — Publicaciones reales en el feed del staff
 
-> **Estado:** Borrador
+> **Estado:** Aprobado
 > **Depende de:** SPEC DB 01 (tablas posts + bucket), SPEC 06 (modal Nueva publicación), SPEC 10 (rooms + children)
 > **Fecha:** 2026-10-13
 > **Objetivo:** Que el staff publique en el feed desde el modal —con texto y hasta 10 fotos opcionales— y que el feed deje los datos mock para mostrar las publicaciones reales de su guardería.
