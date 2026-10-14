@@ -5,13 +5,25 @@ interface PostCardProps {
 }
 
 const badgeByType: Record<PostCategory, { label: string; className: string }> = {
-  achievement: {
-    label: "LOGRO",
-    className: "bg-badge-logro-fondo text-badge-logro",
+  meal: {
+    label: "COMIDA",
+    className: "bg-badge-meal-fondo text-badge-meal",
+  },
+  nap: {
+    label: "SIESTA",
+    className: "bg-badge-nap-fondo text-badge-nap",
   },
   activity: {
     label: "ACTIVIDAD",
     className: "bg-badge-actividad-fondo text-badge-actividad",
+  },
+  achievement: {
+    label: "LOGRO",
+    className: "bg-badge-logro-fondo text-badge-logro",
+  },
+  photo: {
+    label: "FOTO",
+    className: "bg-badge-photo-fondo text-badge-photo",
   },
   announcement: {
     label: "ANUNCIO",
