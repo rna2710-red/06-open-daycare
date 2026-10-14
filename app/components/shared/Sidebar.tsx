@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, type ReactNode } from "react";
-import { classroom, user } from "@/lib/mock/feed";
-import CreatePostModal from "@/app/components/home/CreatePostModal";
-import Toast from "@/app/components/shared/Toast";
+import { useState, type ReactNode } from "react";
+import { classroom } from "@/lib/mock/feed";
+import { usePostComposer } from "@/app/components/home/PostComposerProvider";
+import { useUser } from "@/app/providers";
 
 export type NavItem = "feed" | "ninos" | "avisos" | "cuenta";
 
@@ -163,17 +163,7 @@ const navItems: { id: NavItem; label: string; icon: ReactNode; href: string }[] 
 
 export function Sidebar({ itemActivo }: SidebarProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isToastVisible, setIsToastVisible] = useState(false);
-
-  const openModal = useCallback(() => setIsModalOpen(true), []);
-  const closeModal = useCallback(() => setIsModalOpen(false), []);
-  const handlePublish = useCallback(() => {
-    setIsToastVisible(true);
-  }, []);
-  const handleToastClose = useCallback(() => {
-    setIsToastVisible(false);
-  }, []);
+  const { openComposer } = usePostComposer();
 
   return (
     <>
@@ -206,30 +196,24 @@ export function Sidebar({ itemActivo }: SidebarProps) {
             className="absolute inset-0 bg-tinta/45"
           />
           <aside className="absolute inset-y-0 left-0 flex w-[248px] flex-col border-r border-borde bg-superficie px-4 py-6">
-            <SidebarContent itemActivo={itemActivo} onNewPost={openModal} />
+            <SidebarContent itemActivo={itemActivo} onNewPost={openComposer} />
           </aside>
         </div>
       )}
 
       <aside className="sticky top-0 hidden h-dvh w-[248px] flex-none flex-col border-r border-borde bg-superficie px-4 py-6 md:flex">
-        <SidebarContent itemActivo={itemActivo} onNewPost={openModal} />
+        <SidebarContent itemActivo={itemActivo} onNewPost={openComposer} />
       </aside>
-
-      <CreatePostModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onPublish={handlePublish}
-      />
-      <Toast
-        message="Publicación enviada"
-        isVisible={isToastVisible}
-        onClose={handleToastClose}
-      />
     </>
   );
 }
 
 function SidebarContent({ itemActivo, onNewPost }: SidebarContentProps) {
+  const { profile } = useUser();
+  const userInitial = profile?.full_name?.trim()?.charAt(0).toUpperCase() ?? "?";
+  const userName = profile?.full_name ?? "";
+  const userRole = profile?.role ?? "";
+
   return (
     <>
       <a href="#" className="flex items-center gap-[11px] px-2 pb-[22px] pt-1">
@@ -277,13 +261,13 @@ function SidebarContent({ itemActivo, onNewPost }: SidebarContentProps) {
       <div className="mt-[10px] border-t border-borde pt-[14px]">
         <div className="flex items-center gap-[11px] px-2 py-1.5">
           <span className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full bg-coral-medio font-display text-base font-semibold text-white">
-            {user.initial}
+            {userInitial}
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-extrabold text-tinta">
-              {user.name}
+              {userName}
             </span>
-            <span className="block text-xs text-tinta-mute">{user.role}</span>
+            <span className="block text-xs text-tinta-mute">{userRole}</span>
           </span>
           <a
             href="#"
