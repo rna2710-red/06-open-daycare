@@ -77,7 +77,6 @@ export default function CreatePostModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const titleId = useId();
   const audienceLabelId = useId();
-  const roomLabelId = useId();
   const typeLabelId = useId();
   const descriptionId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
