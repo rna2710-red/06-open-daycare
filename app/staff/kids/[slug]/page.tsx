@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
-import { Sidebar } from "@/app/components/shared/Sidebar";
 import LinkParentTrigger from "@/app/components/kids/LinkParentTrigger";
 import { adminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
@@ -203,12 +202,10 @@ export default async function ChildProfilePage({
       : null;
 
   return (
-    <div className="flex h-dvh flex-col bg-fondo md:flex-row">
-      <Sidebar itemActivo="ninos" />
-      <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-[820px] px-5 pb-20 pt-[34px] md:px-10">
-          <Link
-            href="/kids"
+    <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
+      <div className="mx-auto w-full max-w-[820px] px-5 pb-20 pt-[34px] md:px-10">
+        <Link
+          href="/staff/kids"
             className="mb-5 flex items-center gap-[7px] text-[14px] font-bold text-tinta-suave"
           >
             {backIcon}Volver a Niños
@@ -355,6 +352,6 @@ export default async function ChildProfilePage({
           </div>
         </div>
       </main>
-    </div>
   );
 }
+

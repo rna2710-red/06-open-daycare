@@ -1,17 +1,19 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { classroom } from "@/lib/mock/feed";
 import { usePostComposer } from "@/app/components/home/PostComposerProvider";
 import { useUser } from "@/app/providers";
 
-export type NavItem = "feed" | "ninos" | "avisos" | "cuenta";
+export type StaffNavItem = "feed" | "ninos" | "avisos" | "cuenta";
 
-interface SidebarProps {
-  itemActivo: NavItem;
+interface StaffSidebarProps {
+  itemActivo?: StaffNavItem;
 }
 
-interface SidebarContentProps extends SidebarProps {
+interface StaffSidebarContentProps {
+  itemActivo?: StaffNavItem;
   onNewPost: () => void;
 }
 
@@ -154,16 +156,24 @@ const closeIcon = (
   </svg>
 );
 
-const navItems: { id: NavItem; label: string; icon: ReactNode; href: string }[] = [
-  { id: "feed", label: "Feed", icon: feedIcon, href: "/" },
-  { id: "ninos", label: "Niños", icon: kidsIcon, href: "/kids" },
-  { id: "avisos", label: "Avisos", icon: bellIcon, href: "/avisos" },
-  { id: "cuenta", label: "Mi cuenta", icon: accountIcon, href: "/cuenta" },
+const navItems: {
+  id: StaffNavItem;
+  label: string;
+  icon: ReactNode;
+  href: string;
+  match: (pathname: string) => boolean;
+}[] = [
+  { id: "feed", label: "Feed", icon: feedIcon, href: "/staff", match: (p) => p === "/staff" },
+  { id: "ninos", label: "Niños", icon: kidsIcon, href: "/staff/kids", match: (p) => p.startsWith("/staff/kids") },
+  { id: "avisos", label: "Avisos", icon: bellIcon, href: "/staff/avisos", match: (p) => p.startsWith("/staff/avisos") },
+  { id: "cuenta", label: "Mi cuenta", icon: accountIcon, href: "/staff/cuenta", match: (p) => p.startsWith("/staff/cuenta") },
 ];
 
-export function Sidebar({ itemActivo }: SidebarProps) {
+export function StaffSidebar({ itemActivo }: StaffSidebarProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { openComposer } = usePostComposer();
+  const pathname = usePathname();
+  const activeItem = itemActivo ?? navItems.find((item) => item.match(pathname))?.id;
 
   return (
     <>
@@ -196,21 +206,28 @@ export function Sidebar({ itemActivo }: SidebarProps) {
             className="absolute inset-0 bg-tinta/45"
           />
           <aside className="absolute inset-y-0 left-0 flex w-[248px] flex-col border-r border-borde bg-superficie px-4 py-6">
-            <SidebarContent itemActivo={itemActivo} onNewPost={openComposer} />
+            <StaffSidebarContent
+              itemActivo={activeItem}
+              onNewPost={openComposer}
+            />
           </aside>
         </div>
       )}
 
       <aside className="sticky top-0 hidden h-dvh w-[248px] flex-none flex-col border-r border-borde bg-superficie px-4 py-6 md:flex">
-        <SidebarContent itemActivo={itemActivo} onNewPost={openComposer} />
+        <StaffSidebarContent itemActivo={activeItem} onNewPost={openComposer} />
       </aside>
     </>
   );
 }
 
-function SidebarContent({ itemActivo, onNewPost }: SidebarContentProps) {
+function StaffSidebarContent({
+  itemActivo,
+  onNewPost,
+}: StaffSidebarContentProps) {
   const { profile } = useUser();
-  const userInitial = profile?.full_name?.trim()?.charAt(0).toUpperCase() ?? "?";
+  const userInitial =
+    profile?.full_name?.trim()?.charAt(0).toUpperCase() ?? "?";
   const userName = profile?.full_name ?? "";
   const userRole = profile?.role ?? "";
 

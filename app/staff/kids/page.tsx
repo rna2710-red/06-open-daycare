@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Sidebar } from "@/app/components/shared/Sidebar";
 import { KidCard } from "@/app/components/kids/KidCard";
 import AddChildModal from "@/app/components/kids/AddChildModal";
 import { createClient } from "@/utils/supabase/client";
@@ -161,8 +160,7 @@ export default function KidsPage() {
   }, []);
 
   return (
-    <div className="flex h-dvh flex-col bg-fondo md:flex-row">
-      <Sidebar itemActivo="ninos" />
+    <>
       <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-[880px] px-5 pb-20 pt-[34px] md:px-10">
           <div className="mb-[22px] flex items-end justify-between gap-4">
@@ -226,11 +224,11 @@ export default function KidsPage() {
             <span className="h-px flex-1 bg-[#E7DAC8]" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3.5">
-            {filteredChildren.map((child) => (
-              <KidCard key={child.id} child={child} />
-            ))}
-          </div>
+        <div className="grid grid-cols-2 gap-3.5">
+          {filteredChildren.map((child) => (
+            <KidCard key={child.id} child={child} />
+          ))}
+        </div>
         </div>
       </main>
       <AddChildModal
@@ -239,6 +237,6 @@ export default function KidsPage() {
         rooms={rooms}
         onSave={fetchData}
       />
-    </div>
+    </>
   );
 }
