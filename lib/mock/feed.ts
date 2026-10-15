@@ -1,4 +1,10 @@
-export type PostCategory = "achievement" | "activity" | "announcement";
+export type PostCategory =
+  | "meal"
+  | "nap"
+  | "activity"
+  | "achievement"
+  | "photo"
+  | "announcement";
 
 export interface Post {
   id: string;
@@ -73,18 +79,17 @@ export const posts: Post[] = [
 ];
 
 export interface PostType {
-  id: string;
+  id: PostCategory;
   label: string;
   bgColor: string;
   textColor: string;
 }
 
 export const postTypes: PostType[] = [
-  { id: "comida", label: "Comida", bgColor: "#9A7B1E", textColor: "#fff" },
-  { id: "siesta", label: "Siesta", bgColor: "#E7DCF6", textColor: "#7B5FC0" },
-  { id: "actividad", label: "Actividad", bgColor: "#2E89A6", textColor: "#fff" },
-  { id: "logro", label: "Logro", bgColor: "#CFEBD8", textColor: "#3E9B6C" },
-  { id: "animo", label: "Ánimo", bgColor: "#F9D2DE", textColor: "#C56486" },
-  { id: "foto", label: "Foto", bgColor: "#FBD8CC", textColor: "#D9684A" },
-  { id: "anuncio", label: "Anuncio", bgColor: "#CCD8F4", textColor: "#4E72C8" },
+  { id: "meal", label: "Comida", bgColor: "#9A7B1E", textColor: "#fff" },
+  { id: "nap", label: "Siesta", bgColor: "#E7DCF6", textColor: "#7B5FC0" },
+  { id: "activity", label: "Actividad", bgColor: "#2E89A6", textColor: "#fff" },
+  { id: "achievement", label: "Logro", bgColor: "#CFEBD8", textColor: "#3E9B6C" },
+  { id: "photo", label: "Foto", bgColor: "#FBD8CC", textColor: "#D9684A" },
+  { id: "announcement", label: "Anuncio", bgColor: "#CCD8F4", textColor: "#4E72C8" },
 ];

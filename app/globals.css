@@ -27,6 +27,12 @@
   --color-badge-actividad-fondo: #C7E7F1;
   --color-badge-anuncio: #4E72C8;
   --color-badge-anuncio-fondo: #CCD8F4;
+  --color-badge-meal: #9A7B1E;
+  --color-badge-meal-fondo: #F0E4C4;
+  --color-badge-nap: #7B5FC0;
+  --color-badge-nap-fondo: #E7DCF6;
+  --color-badge-photo: #D9684A;
+  --color-badge-photo-fondo: #FBD8CC;
 }
 
 @theme inline {
